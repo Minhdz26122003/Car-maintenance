@@ -1,0 +1,44 @@
+/* Định dạng bảng */
+.account-table-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  margin-top: -40px;
+}
+.head-account th {
+  background-color: rgb(236, 209, 210);
+  font-weight: bold;
+  font-size: 16px;
+}
+.account-search-bar {
+  position: static;
+  top: -40px;
+}
+.account-table {
+  border-collapse: collapse;
+}
+
+.account-table th,
+.account-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.account-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

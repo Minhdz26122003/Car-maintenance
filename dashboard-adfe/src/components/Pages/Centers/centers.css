@@ -1,0 +1,40 @@
+/* Định dạng bảng */
+.center-table-container {
+  position: static;
+  height: 100vh;
+  width: 100%;
+  margin-top: -20px;
+}
+.head-center th {
+  background-color: rgb(236, 209, 210);
+  font-weight: bold;
+  font-size: 16px;
+}
+.center-table {
+  border-collapse: collapse;
+}
+
+.center-table th,
+.center-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.center-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

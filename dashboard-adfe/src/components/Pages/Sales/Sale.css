@@ -1,0 +1,40 @@
+/* Định dạng bảng */
+.sale-table-container {
+  position: static;
+  height: 100vh;
+  width: 100%;
+  margin-top: -20px;
+}
+.head-sale th {
+  background-color: rgb(236, 209, 210);
+  font-weight: bold;
+  font-size: 16px;
+}
+.sale-table {
+  border-collapse: collapse;
+}
+
+.sale-table th,
+.sale-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.sale-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
