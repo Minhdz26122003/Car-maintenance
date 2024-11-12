@@ -24,26 +24,56 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import "./Sale.css"; // Import style riêng
+import url from "../../../ipconfixad.js";
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
   const [selectedSale, setSelectedSale] = useState(null);
   const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa dich vu
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm dich vu
+  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
 
   useEffect(() => {
     fetchSales();
   }, []);
   const fetchSales = async () => {
     try {
-      const response = await axios.get(
-        "http://10.40.2.115/myapi/Khuyenmai/getKM.php"
-      );
+      const response = await axios.get(`${url}myapi/Khuyenmai/getKM.php`);
       setSales(response.data);
     } catch (error) {
       console.error("Error fetching sale:", error);
     }
   };
+
+  //TÌM KIẾM
+  const searchSales = async (giatri) => {
+    try {
+      const response = await axios.get(
+        `${url}myapi/Khuyenmai/tkiemmakm.php?giatri=${giatri}`
+      );
+      const sales = response.data.sales;
+      console.log("API Response:", sales); // Đảm bảo dữ liệu trả về là mảng
+      setSales(sales); // Cập nhật danh sáchtìm kiếm
+    } catch (error) {
+      console.error("Error searching sales:", error);
+    }
+  };
+  // Gọi API để lấy tất cả khi component được load lần đầu
+  useEffect(() => {
+    if (searchTerm) {
+      console.log("Searching for:", searchTerm);
+      searchSales(searchTerm); // Gọi tìm kiếm khi có từ khóa
+    } else {
+      console.log("Fetching all sale");
+      fetchSales(); // Lấy tất cả tài khoản khi không có từ khóa tìm kiếm
+    }
+  }, [searchTerm]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    // console.log("Search Term:", event.target.value);
+  };
+  ////
 
   // THÊM KHUYẾN MÃI
   const handleAddSubmit = async (newSale) => {
@@ -57,7 +87,7 @@ const Sales = () => {
 
       // Gửi yêu cầu thêm km mới
       const response = await axios.post(
-        "http://10.40.2.115/myapi/Khuyenmai/themmakm.php",
+        `${url}myapi/Khuyenmai/themmakm.php`,
         formData,
         {
           headers: {
@@ -90,10 +120,7 @@ const Sales = () => {
   const handleEditSubmit = async () => {
     try {
       // Gửi dữ liệu đã sửa về server
-      await axios.put(
-        "http://10.40.2.115/myapi/Khuyenmai/suamakm.php",
-        selectedSale
-      );
+      await axios.put(`${url}myapi/Khuyenmai/suamakm.php`, selectedSale);
 
       // Sau khi cập nhật thành công, đóng form và tải lại danh sách
       setOpenEdit(false);
@@ -124,7 +151,7 @@ const Sales = () => {
     }
 
     try {
-      await axios.delete(`http://10.40.2.115/myapi/Khuyenmai/xoamakm.php`, {
+      await axios.delete(`${url}myapi/Khuyenmai/xoamakm.php`, {
         data: { idkm: id }, // Gửi ID trong body của yêu cầu DELETE
       });
 
@@ -141,12 +168,20 @@ const Sales = () => {
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
   };
-  // const VND = new Intl.NumberFomart("vi-VN", {
-  //   style: "currency",
-  //   currency: "VND",
-  // });
+
   return (
     <div>
+      {/* Thanh tìm kiếm */}
+      <TextField
+        className="sale-search-bar"
+        label="Tìm kiếm mã giảm giá"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="Tìm kiếm theo giá  "
+      />
       <TableContainer component={Paper} className="sale-table-container">
         <Table aria-label="sale table" className="sale-table">
           {/* Tiêu đề bảng*/}
@@ -163,7 +198,7 @@ const Sales = () => {
           </TableHead>
 
           <TableBody>
-            {Array.isArray(sales) &&
+            {Array.isArray(sales) && sales.length > 0 ? (
               sales.map((sale) => (
                 <TableRow key={sale.idkm}>
                   <TableCell>{sale.idkm}</TableCell>
@@ -188,7 +223,14 @@ const Sales = () => {
                     </IconButton>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} align="center">
+                  Không có mã nào đươc tìm thấy
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

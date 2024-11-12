@@ -24,26 +24,57 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import "./centers.css"; // Import style riêng
+import url from "../../../ipconfixad.js";
 
 const Centers = () => {
   const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa dich vu
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm dich vu
+  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
 
   useEffect(() => {
     fetchCenters();
   }, []);
+
   const fetchCenters = async () => {
     try {
-      const response = await axios.get(
-        "http://192.168.1.3/myapi/Trungtam/getTT.php"
-      );
+      const response = await axios.get(`${url}myapi/Trungtam/getTT.php`);
       setCenters(response.data);
     } catch (error) {
       console.error("Error fetching center:", error);
     }
   };
+
+  //TÌM KIẾM TRUNG TÂM
+  const searchCenters = async (tentrungtam) => {
+    try {
+      const response = await axios.get(
+        `${url}myapi/Trungtam/tktrungtam.php?tentrungtam=${tentrungtam}`
+      );
+      const centers = response.data.centers;
+      console.log("API Response:", centers);
+      setCenters(centers);
+    } catch (error) {
+      console.error("Error searching centers:", error);
+    }
+  };
+  // Gọi API để lấy tất cả khi component được load lần đầu
+  useEffect(() => {
+    if (searchTerm) {
+      console.log("Searching for:", searchTerm);
+      searchCenters(searchTerm);
+    } else {
+      console.log("Fetching all center");
+      fetchCenters();
+    }
+  }, [searchTerm]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    // console.log("Search Term:", event.target.value);
+  };
+  ////
 
   // THÊM TRUNG TÂM
   const handleAddSubmit = async (newCenter) => {
@@ -62,7 +93,7 @@ const Centers = () => {
 
       // Gửi yêu cầu thêm dịch vụ mới
       const response = await axios.post(
-        "http://192.168.1.3/myapi/Trungtam/themtrungtam.php",
+        `${url}/myapi/Trungtam/themtrungtam.php`,
         formData,
         {
           headers: {
@@ -94,10 +125,7 @@ const Centers = () => {
   const handleEditSubmit = async () => {
     try {
       // Gửi dữ liệu đã sửa về server
-      await axios.put(
-        "http://192.168.1.3/myapi/Trungtam/suatrungtam.php",
-        selectedCenter
-      );
+      await axios.put(`${url}myapi/Trungtam/suatrungtam.php`, selectedCenter);
 
       // Sau khi cập nhật thành công, đóng form và tải lại danh sách
       setOpenEdit(false);
@@ -128,7 +156,7 @@ const Centers = () => {
     }
 
     try {
-      await axios.delete(`http://192.168.1.3/myapi/Trungtam/xoatrungtam.php`, {
+      await axios.delete(`${url}/myapi/Trungtam/xoatrungtam.php`, {
         data: { idtrungtam: id }, // Gửi ID trong body của yêu cầu DELETE
       });
 
@@ -141,6 +169,18 @@ const Centers = () => {
 
   return (
     <div>
+      {/* Thanh tìm kiếm */}
+      <TextField
+        className="center-search-bar"
+        label="Tìm kiếm trung tâm"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="Tìm kiếm theo tên trung tâm"
+      />
+
       <TableContainer component={Paper} className="center-table-container">
         <Table aria-label="center table" className="center-table">
           {/* Tiêu đề bảng*/}
@@ -160,39 +200,47 @@ const Centers = () => {
           </TableHead>
 
           <TableBody>
-            {centers.map((center) => (
-              <TableRow key={center.idtrungtam}>
-                <TableCell>{center.idtrungtam}</TableCell>
-                <TableCell>{center.tentrungtam}</TableCell>
-                <TableCell>{center.diachi}</TableCell>
-                <TableCell>{center.sodienthoai}</TableCell>
-                <TableCell>{center.email}</TableCell>
-                <TableCell>
-                  <img
-                    src={center.hinhanh} // URL của hình ảnh từ cơ sở dữ liệu
-                    alt={center.tentrungtam} // Tên dịch vụ
-                    style={{ width: "100px", height: "auto" }} // Kiểm soát kích thước hình ảnh
-                  />
-                </TableCell>
-                <TableCell>{center.toadox}</TableCell>
-                <TableCell>{center.toadoy}</TableCell>
+            {centers && centers.length > 0 ? (
+              centers.map((center) => (
+                <TableRow key={center.idtrungtam}>
+                  <TableCell>{center.idtrungtam}</TableCell>
+                  <TableCell>{center.tentrungtam}</TableCell>
+                  <TableCell>{center.diachi}</TableCell>
+                  <TableCell>{center.sodienthoai}</TableCell>
+                  <TableCell>{center.email}</TableCell>
+                  <TableCell>
+                    <img
+                      src={center.hinhanh} // URL của hình ảnh từ cơ sở dữ liệu
+                      alt={center.tentrungtam} // Tên dịch vụ
+                      style={{ width: "100px", height: "auto" }} // Kiểm soát kích thước hình ảnh
+                    />
+                  </TableCell>
+                  <TableCell>{center.toadox}</TableCell>
+                  <TableCell>{center.toadoy}</TableCell>
 
-                <TableCell className="center-table-actions">
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(center)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(center.idtrungtam)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  <TableCell className="center-table-actions">
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(center)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(center.idtrungtam)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} align="center">
+                  Không có trung tâm nào đươc tìm thấy
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>

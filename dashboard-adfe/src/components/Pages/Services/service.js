@@ -24,6 +24,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import "./service.css"; // Import style riêng
+import url from "../../../ipconfixad.js";
 
 const Service = () => {
   const [services, setServices] = useState([]);
@@ -36,20 +37,51 @@ const Service = () => {
   });
   const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa dich vu
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm dich vu
+  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
 
   useEffect(() => {
     fetchServices();
   }, []);
+
   const fetchServices = async () => {
     try {
-      const response = await axios.get(
-        "http://192.168.1.3/myapi/Dichvu/getDV.php"
-      );
+      const response = await axios.get(`${url}myapi/Dichvu/getDV.php`);
       setServices(response.data);
     } catch (error) {
       console.error("Error fetching service:", error);
     }
   };
+
+  //TÌM KIẾM DỊCH VỤ
+  const searchServices = async (tendichvu) => {
+    try {
+      const response = await axios.get(
+        `${url}myapi/Dichvu/tkdichvu.php?tendichvu=${tendichvu}`
+      );
+      console.log("Full API Response:", response.data); // Log toàn bộ phản hồi
+      const services = response.data.services;
+      console.log("API Response - services:", services);
+      setServices(services); // Cập nhật danh sách tìm kiếm
+    } catch (error) {
+      console.error("Error searching services:", error);
+    }
+  };
+  // Gọi API để lấy tất cả khi component được load lần đầu
+  useEffect(() => {
+    if (searchTerm) {
+      console.log("Searching for:", searchTerm);
+      searchServices(searchTerm); // Gọi tìm kiếm khi có từ khóa
+    } else {
+      console.log("Fetching all services");
+      fetchServices(); // Lấy tất cả tài khoản khi không có từ khóa tìm kiếm
+    }
+  }, [searchTerm]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    // console.log("Search Term:", event.target.value);
+  };
+  ////
 
   // THÊM DỊCH VỤ
   const handleAddSubmit = async (newService) => {
@@ -63,7 +95,7 @@ const Service = () => {
       formData.append("thoigianth", newService.thoigianth); // Bạn có thể cần xử lý định dạng thời gian nếu cần
 
       const response = await axios.post(
-        "http://192.168.1.3/myapi/Dichvu/themdichvu.php",
+        `${url}myapi/Dichvu/themdichvu.php`,
         formData,
         {
           headers: {
@@ -97,10 +129,7 @@ const Service = () => {
   const handleEditSubmit = async () => {
     try {
       // Gửi dữ liệu đã sửa về server
-      await axios.put(
-        "http://192.168.1.3/myapi/Dichvu/suadichvu.php",
-        selectedService
-      );
+      await axios.put(`${url}myapi/Dichvu/suadichvu.php`, selectedService);
 
       // Sau khi cập nhật thành công, đóng form và tải lại danh sách
       setOpenEdit(false);
@@ -131,7 +160,7 @@ const Service = () => {
     }
 
     try {
-      await axios.delete(`http://192.168.1.3/myapi/Dichvu/xoadichvu.php`, {
+      await axios.delete(`${url}myapi/Dichvu/xoadichvu.php`, {
         data: { iddichvu: id }, // Gửi ID trong body của yêu cầu DELETE
       });
 
@@ -150,6 +179,18 @@ const Service = () => {
 
   return (
     <div>
+      {/* Thanh tìm kiếm */}
+      <TextField
+        className="service-search-bar"
+        label="Tìm kiếm dịch vụ"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="Tìm kiếm theo tên dich vụ"
+      />
+
       <TableContainer component={Paper} className="service-table-container">
         <Table aria-label="service table" className="service-table">
           {/* Tiêu đề bảng*/}
@@ -167,36 +208,44 @@ const Service = () => {
           </TableHead>
 
           <TableBody>
-            {services.map((service) => (
-              <TableRow key={service.iddichvu}>
-                <TableCell>{service.iddichvu}</TableCell>
-                <TableCell>{service.tendichvu}</TableCell>
-                <TableCell>{service.mota}</TableCell>
-                <TableCell>{formatPrice(service.gia)}</TableCell>
-                <TableCell>
-                  <img
-                    src={service.hinhanh} // URL của hình ảnh từ cơ sở dữ liệu
-                    alt={service.tendichvu} // Tên dịch vụ
-                    style={{ width: "100px", height: "auto" }} // Kiểm soát kích thước hình ảnh
-                  />
-                </TableCell>
-                <TableCell>{service.thoigianth}</TableCell>
-                <TableCell className="service-table-actions">
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(service)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(service.iddichvu)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {services && services.length > 0 ? (
+              services.map((service) => (
+                <TableRow key={service.iddichvu}>
+                  <TableCell>{service.iddichvu}</TableCell>
+                  <TableCell>{service.tendichvu}</TableCell>
+                  <TableCell>{service.mota}</TableCell>
+                  <TableCell>{formatPrice(service.gia)}</TableCell>
+                  <TableCell>
+                    <img
+                      src={service.hinhanh} // URL của hình ảnh từ cơ sở dữ liệu
+                      alt={service.tendichvu} // Tên dịch vụ
+                      style={{ width: "100px", height: "auto" }} // Kiểm soát kích thước hình ảnh
+                    />
+                  </TableCell>
+                  <TableCell>{service.thoigianth}</TableCell>
+                  <TableCell className="service-table-actions">
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(service)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(service.iddichvu)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} align="center">
+                  Không có dịch vụ nào được tìm thấy
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>

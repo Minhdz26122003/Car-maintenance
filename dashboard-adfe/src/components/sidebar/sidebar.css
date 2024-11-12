@@ -1,15 +1,21 @@
 /* Sidebar container */
 .sidebar-container {
-  margin: 20px 0px 50px 20px;
-  height: 90%;
+  margin: 5px 0px 500px 20px;
   width: 250px;
-
   border-radius: 15px; /* Bo viền */
   overflow: hidden; /* Không cho phép các phần tử tràn ra ngoài */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
-  background-color: white; /* Đảm bảo màu nền */
 }
-
+.siderbar {
+  color: var(--black);
+  height: 100vh;
+  background: linear-gradient(
+    106.37deg,
+    #d3dff1 29.63%,
+    #ebb6b6 51.55%,
+    #cbf5c5 90.85%
+  );
+}
 /* Mục Sidebar */
 .sidebar-item {
   background-color: inherit;
@@ -40,7 +46,8 @@
 
 .sidebar-item.active {
   background-color: #f0f0f0;
-  color: #c5116e;
+  color: #000000;
+  font-weight: bold;
 }
 
 .sidebar-icon {
@@ -48,5 +55,5 @@
 }
 
 .sidebar-icon.active {
-  color: #db1162;
+  color: #000000;
 }

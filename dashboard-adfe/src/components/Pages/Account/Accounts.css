@@ -1,9 +1,9 @@
 /* Định dạng bảng */
 .account-table-container {
   position: relative;
-  height: 100vh;
-  width: 100%;
-  margin-top: -40px;
+  left: 170px;
+  max-width: 88%;
+  margin-top: -30px;
 }
 .head-account th {
   background-color: rgb(236, 209, 210);
@@ -12,7 +12,9 @@
 }
 .account-search-bar {
   position: static;
-  top: -40px;
+  max-width: 88%;
+  left: 170px;
+  top: -20px;
 }
 .account-table {
   border-collapse: collapse;

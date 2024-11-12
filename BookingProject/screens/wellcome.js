@@ -1,74 +1,49 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  useWindowDimensions,
   Image,
-  TouchableOpacity,
-  Alert,
+  StyleSheet,
+  Animated,
+  Dimensions,
 } from "react-native";
-import Carousel from "react-native-snap-carousel";
-import { useWindowDimensions } from "react-native";
+import LottieView from "lottie-react-native";
 
-// Danh sách hình ảnh giới thiệu
-const carouselItems = [
-  {
-    id: "1",
-    title: "Chào mừng đến với Gara Ô Tô ABC",
-    uri: "https://example.com/image1.jpg", // Thay bằng URL hình ảnh thực tế của bạn
-  },
-  {
-    id: "2",
-    title: "Dịch vụ sửa chữa chuyên nghiệp",
-    uri: "https://example.com/image2.jpg", // Thay bằng URL hình ảnh thực tế của bạn
-  },
-  {
-    id: "3",
-    title: "Đặt lịch sửa xe dễ dàng",
-    uri: "https://example.com/image3.jpg", // Thay bằng URL hình ảnh thực tế của bạn
-  },
-];
-
+const { width, height } = Dimensions.get("window");
 const WelcomeScreen = ({ navigation }) => {
-  const { width, height } = useWindowDimensions();
-  const renderItem = ({ item }) => (
-    <View style={styles.slide}>
-      <Image source={{ uri: item.uri }} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-    </View>
-  );
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Giá trị cho hiệu ứng fade
+
+  useEffect(() => {
+    // Bắt đầu hiệu ứng fade-in
+    Animated.timing(fadeAnim, {
+      toValue: 1, // Fade tới 1 (hiển thị)
+      duration: 1500, // Thời gian thực hiện (ms)
+      useNativeDriver: true,
+    }).start();
+
+    // Chuyển sang màn hình Login sau 2.5 giây
+    const timer = setTimeout(() => {
+      navigation.replace("LoginScreen");
+    }, 2000);
+
+    // Clear timeout nếu màn hình bị unmounted
+    return () => clearTimeout(timer);
+  }, [fadeAnim, navigation]);
 
   return (
     <View style={styles.container}>
-      <Carousel
-        data={carouselItems}
-        renderItem={renderItem}
-        sliderWidth={width}
-        itemWidth={width}
-        autoplay
-        loop
+      <Image source={require("../assets/car5.jpg")} style={styles.background} />
+      <LottieView
+        source={require("../assets/car5.jpg")} // Thay bằng đường dẫn Lottie của bạn
+        autoPlay
+        loop={false}
+        style={styles.lottie}
       />
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("ScheduleScreen")} // Đảm bảo route này tồn tại
-        >
-          <Text style={styles.buttonText}>Đặt Lịch Ngay</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            Alert.alert(
-              "Thông tin",
-              "Chúng tôi cung cấp dịch vụ sửa chữa và bảo trì ô tô chuyên nghiệp."
-            )
-          }
-        >
-          <Text style={styles.buttonText}>Tìm Hiểu Thêm</Text>
-        </TouchableOpacity>
-      </View>
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <Text style={styles.welcomeText}>
+          Chào mừng đến với ứng dụng của chúng tôi!
+        </Text>
+      </Animated.View>
     </View>
   );
 };
@@ -78,40 +53,32 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#4c669f", // Gradient background
   },
-  slide: {
+  background: {
+    position: "absolute",
     width: width,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  image: {
-    width: width,
-    height: height * 0.5,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
+    height: height,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    resizeMode: "cover",
+    zIndex: -1,
+    opacity: 0.8,
     marginTop: 10,
+  },
+  lottie: {
+    width: 300,
+    height: 300,
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#000000", // Màu chữ trắng
     textAlign: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    textAlign: "center",
+    marginBottom: 20,
+    zIndex: 9,
   },
 });
 

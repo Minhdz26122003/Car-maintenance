@@ -1,9 +1,9 @@
 .dashboard-container {
   position: relative;
-  margin-top: -150px;
   display: flex;
   flex-direction: row;
   padding: 20px;
+  margin-left: 150px;
 }
 
 .cards-container {

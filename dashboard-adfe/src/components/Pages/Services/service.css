@@ -1,9 +1,9 @@
 /* Định dạng bảng */
 .service-table-container {
   position: static;
-  height: 100vh;
-  width: 100%;
-  margin-top: -20px;
+  margin-left: 170px;
+  max-width: 88%;
+  margin-top: -30px;
 }
 .head-service th {
   background-color: rgb(236, 209, 210);
@@ -13,7 +13,12 @@
 .service-table {
   border-collapse: collapse;
 }
-
+.service-search-bar {
+  position: static;
+  max-width: 88%;
+  left: 170px;
+  top: -20px;
+}
 .service-table th,
 .service-table td {
   padding: 12px;

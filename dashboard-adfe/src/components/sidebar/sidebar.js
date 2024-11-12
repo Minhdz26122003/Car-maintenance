@@ -14,6 +14,7 @@ import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import PersonIcon from "@mui/icons-material/Person";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -25,11 +26,12 @@ const Sidebar = () => {
     { text: "Services", icon: <RoomServiceIcon />, link: "/service" },
     { text: "Centers", icon: <MapsHomeWorkIcon />, link: "/center" },
     { text: "Sales", icon: <LoyaltyIcon />, link: "/sale" },
+    { text: "Booking", icon: <CalendarMonthIcon />, link: "/booking" },
     { text: "Settings", icon: <SettingsIcon />, link: "/settings" },
   ];
   return (
     <Drawer classes={{ paper: "sidebar-container" }} variant="permanent">
-      <List>
+      <List className="siderbar">
         {items.map((item, index) => (
           <ListItem
             button

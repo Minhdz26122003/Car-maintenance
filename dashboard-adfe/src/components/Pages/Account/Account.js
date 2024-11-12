@@ -27,7 +27,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import "./Accounts.css"; // Import style riêng
-
+import url from "../../../ipconfixad.js";
 const Account = () => {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState({
@@ -40,12 +40,12 @@ const Account = () => {
   });
   const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa tài khoản
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm tài khoản
-  const [filteredAccounts, setFilteredAccounts] = useState([]); // Danh sách tài khoản sau khi lọc
-  const [searchTerm, setSearchTerm] = useState(""); // Biến lưu từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
 
   useEffect(() => {
     fetchAccounts();
   }, []);
+
   const roleMapping = {
     0: "Người dùng",
     1: "Nhân viên",
@@ -54,9 +54,7 @@ const Account = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await axios.get(
-        "http://192.168.1.3/myapi/Taikhoan/getTK.php"
-      );
+      const response = await axios.get(`${url}myapi/Taikhoan/getTK.php`);
       const accounts = response.data; // Giữ vaitro là số
       setAccounts(accounts);
     } catch (error) {
@@ -64,41 +62,41 @@ const Account = () => {
     }
   };
 
-  // TÌM KIẾM
-  const handleSearch = async (event) => {
-    const value = event.target.value.toLowerCase();
-    setSearchTerm(value);
-
+  //TÌM KIẾM TÀI KHOẢN
+  const searchAccounts = async (username) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.3/myapi/Taikhoan/tktaikhoan.php`,
-        {
-          params: {
-            username: value,
-          },
-        }
+        `${url}myapi/Taikhoan/tktaikhoan.php?username=${username}`
       );
-
-      console.log(response.data); // Thêm dòng này để kiểm tra phản hồi
-
-      if (response.data.success) {
-        setFilteredAccounts(response.data.accounts);
-      } else {
-        setFilteredAccounts([]);
-      }
+      const accounts = response.data.accounts;
+      console.log("API Response:", accounts); // Đảm bảo dữ liệu trả về là mảng
+      setAccounts(accounts); // Cập nhật danh sách tài khoản tìm kiếm
     } catch (error) {
       console.error("Error searching accounts:", error);
     }
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      console.log("Searching for:", searchTerm);
+      searchAccounts(searchTerm); // Gọi tìm kiếm khi có từ khóa
+    } else {
+      console.log("Fetching all accounts");
+      fetchAccounts();
+    }
+  }, [searchTerm]);
+
+  // Cập nhật từ khóa tìm kiếm
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    // console.log("Search Term:", event.target.value);
   };
 
   //  THÊM TÀI KHOẢN
   const handleAddSubmit = async (newAccount) => {
     try {
       // Gửi yêu cầu thêm tài khoản mới
-      await axios.post(
-        "http://192.168.1.3/myapi/Taikhoan/themtaikhoan.php",
-        newAccount
-      );
+      await axios.post(`${url}myapi/Taikhoan/themtaikhoan.php`, newAccount);
 
       // Sau khi thêm tài khoản thành công, đóng form và tải lại danh sách tài khoản
       setOpenAdd(false);
@@ -118,10 +116,7 @@ const Account = () => {
   const handleEditSubmit = async () => {
     try {
       // Gửi dữ liệu đã sửa về server
-      await axios.put(
-        "http://192.168.1.3/myapi/Taikhoan/suataikhoan.php",
-        selectedAccount
-      );
+      await axios.put(`${url}myapi/Taikhoan/suataikhoan.php`, selectedAccount);
 
       // Sau khi cập nhật thành công, đóng form và tải lại danh sách tài khoản
       setOpenEdit(false);
@@ -135,7 +130,6 @@ const Account = () => {
     setSelectedAccount(account);
     setOpenEdit(true);
   };
-
   const handleEditClose = (account) => {
     setOpenEdit(false);
     setSelectedAccount({
@@ -144,7 +138,7 @@ const Account = () => {
       password: "",
       sodienthoai: "",
       diachi: "",
-      vaitro: 2,
+      vaitro: 0,
     });
   };
 
@@ -161,7 +155,7 @@ const Account = () => {
     }
 
     try {
-      await axios.delete(`http://192.168.1.3/myapi/Taikhoan/xoataikhoan.php`, {
+      await axios.delete(`${url}myapi/Taikhoan/xoataikhoan.php`, {
         data: { iduser: id }, // Gửi ID trong body của yêu cầu DELETE
       });
 
@@ -183,12 +177,12 @@ const Account = () => {
         margin="normal"
         value={searchTerm}
         onChange={handleSearch}
-        placeholder="Tìm kiếm theo tên hoặc email"
+        placeholder="Tìm kiếm theo tên tài khoản"
       />
 
       <TableContainer component={Paper} className="account-table-container">
         <Table aria-label="account table" className="account-table">
-          {/* Tiêu đề bảng*/}
+          {/* Tiêu đề bảng */}
           <TableHead className="head-account">
             <TableRow>
               <TableCell>ID</TableCell>
@@ -203,36 +197,39 @@ const Account = () => {
           </TableHead>
 
           <TableBody>
-            {(searchTerm ? filteredAccounts : accounts).map((account) => (
-              <TableRow key={account.iduser}>
-                <TableCell>{account.iduser}</TableCell>
-                <TableCell>{account.username}</TableCell>
-                <TableCell>{account.email}</TableCell>
-                <TableCell>{account.password}</TableCell>
-                <TableCell>{account.sodienthoai}</TableCell>
-                <TableCell>{account.diachi}</TableCell>
-                <TableCell>
-                  {roleMapping[account.vaitro] !== undefined
-                    ? roleMapping[account.vaitro]
-                    : "Unknown"}
-                </TableCell>
-
-                <TableCell className="account-table-actions">
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(account)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(account.iduser)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {accounts && accounts.length > 0 ? (
+              accounts.map((account) => (
+                <TableRow key={account.iduser}>
+                  <TableCell>{account.iduser}</TableCell>
+                  <TableCell>{account.username}</TableCell>
+                  <TableCell>{account.email}</TableCell>
+                  <TableCell>{account.password}</TableCell>
+                  <TableCell>{account.sodienthoai}</TableCell>
+                  <TableCell>{account.diachi}</TableCell>
+                  <TableCell>{roleMapping[account.vaitro]}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(account)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(account.iduser)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} align="center">
+                  Không có tài khoản nào được tìm thấy
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -30,7 +30,7 @@ const Dashboard = () => {
         <Card className="card green">
           <CardContent>
             <Typography variant="h5" component="div">
-              Total Users
+              Tổng người dùng
             </Typography>
             <Typography variant="h4">277</Typography>
           </CardContent>
@@ -39,7 +39,7 @@ const Dashboard = () => {
         <Card className="card blue">
           <CardContent>
             <Typography variant="h5" component="div">
-              Total Sales
+              Doanh thu
             </Typography>
             <Typography variant="h4">$3,787,681.00</Typography>
           </CardContent>
@@ -48,7 +48,7 @@ const Dashboard = () => {
         <Card className="card yellow">
           <CardContent>
             <Typography variant="h5" component="div">
-              Total Orders
+              Tổng dịch vụ
             </Typography>
             <Typography variant="h4">500</Typography>
           </CardContent>
@@ -57,7 +57,7 @@ const Dashboard = () => {
         <Card className="card red">
           <CardContent>
             <Typography variant="h5" component="div">
-              Total Service
+              Tổng lượt đặt
             </Typography>
             <Typography variant="h4">12</Typography>
           </CardContent>

@@ -1,5 +1,4 @@
 /* src/App.css */
-
 :root {
   --yellow: linear-gradient(180deg, #f8d49a -146.42%, #fad79d -46.42%);
   --orange: #fca61f;
@@ -18,9 +17,9 @@
   color: var(--black);
   background: linear-gradient(
     106.37deg,
-    #16d7ca 29.63%,
-    #ffcfd1 51.55%,
-    #ee2233 90.85%
+    #cbdedc 29.63%,
+    #edd8e3 51.55%,
+    #d0dce7 90.85%
   );
   height: 100vh;
   display: flex;
@@ -28,19 +27,20 @@
   justify-content: center;
   font-family: "Inter", sans-serif;
 }
-
+.side {
+  height: 50px;
+}
 .AppGlass {
-  display: grid;
+  /* display: grid; */
   height: 87%;
-  width: 84%;
-  margin: 100px 0px 40px 0px;
+  width: 100%;
+  margin: 100px 0px 40px 100px;
 
-  background: var(--glass);
   border-radius: 2rem;
   gap: 16px;
   overflow-x: hidden;
   overflow-y: auto;
-  margin-left: 300px;
+  /* margin-left: 280px; */
   margin-right: 10px;
 }
 
