@@ -4,11 +4,13 @@
   "main": "expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.13.1",
+    "@cloudinary/url-gen": "^1.21.0",
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.2.0",
@@ -20,7 +22,10 @@
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.7",
     "expo": "~51.0.28",
+    "expo-auth-session": "~5.5.2",
+    "expo-crypto": "~13.0.2",
     "expo-status-bar": "~1.12.1",
+    "expo-web-browser": "~13.0.3",
     "formik": "^2.4.6",
     "jwt-decode": "^4.0.0",
     "lottie-react-native": "^7.0.0",
@@ -35,11 +40,14 @@
     "react-native-safe-area-context": "^4.11.0",
     "react-native-screens": "^3.34.0",
     "react-native-snap-carousel": "^3.9.1",
+    "react-native-tab-view": "^4.0.2",
     "react-native-vector-icons": "^10.2.0",
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "expo-module-scripts": "^3.5.2",
+    "typescript": "^5.6.3"
   },
   "private": true
 }

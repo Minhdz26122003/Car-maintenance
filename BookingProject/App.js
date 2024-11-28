@@ -1,5 +1,5 @@
 import React from "react";
-import Rootnavi from "./navigations/Rootnavi"; // Đảm bảo đường dẫn đúng
+import Rootnavi from "./navigations/Rootnavi";
 const App = () => {
   return <Rootnavi />;
 };

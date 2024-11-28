@@ -1,19 +1,21 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import LoginScreen from "./../screens/login";
-import SignupScreen from "./../screens/signup";
-import WellcomeScreen from "./../screens/wellcome";
+import LoginScreen from "./../screens/Login/login";
+import SignupScreen from "./../screens/Login/signup";
+import WellcomeScreen from "./../screens/Login/wellcome";
+import ChangePasswordScreen from "./../screens/Account/ChangePass";
 import HomeScreen from "../screens/BottomTabs/Home";
 import BookingScreen from "../screens/BottomTabs/Booking";
 import ProfileScreen from "../screens/BottomTabs/Profile";
-import CenterDetailScreen from "../screens/Detail/CenterDetail";
-import ManageBookScreen from "../screens/Detail/ManageBook";
-import ManageCarScreen from "../screens/Detail/ManageCar";
-import EditBookScreen from "../screens/EditBook";
-import ServiceDetailScreen from "../screens/Detail/ServiceDetail";
+import CenterDetailScreen from "../screens/Center/CenterDetail";
+import ManageBookScreen from "../screens/Book/ManageBook";
+import ManageCarScreen from "../screens/Car/ManageCar";
+import ServiceDetailScreen from "../screens/Services/ServiceDetail";
 import PaymentScreen from "../screens/payments";
-import ListServices from "../screens/List/ListServices";
+import ListServices from "../screens/Services/ListServices";
+import InforPersonal from "../screens/Account/InforPersonal";
+import ListCenters from "../screens/Center/ListCenter";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -21,7 +23,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ route }) => {
-  const { username } = route.params; // Nhận username từ điều hướng
+  const { username } = route.params;
 
   return (
     <Tab.Navigator
@@ -44,7 +46,7 @@ const BottomTabNavigator = ({ route }) => {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        initialParams={{ username }} // Truyền username vào HomeScreen
+        initialParams={{ username }}
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -71,7 +73,7 @@ const Rootnavi = () => {
           headerStyle: {
             backgroundColor: "transparent",
           },
-          headerTintColor: "#FEAB",
+          headerTintColor: "#000000",
           headerTransparent: true,
           headerTitle: "",
           headerLeftContainerStyle: {
@@ -82,7 +84,7 @@ const Rootnavi = () => {
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen}
-          options={{ title: "Login" }}
+          options={{ title: "Login", headerBackVisible: false }}
         />
         <Stack.Screen
           name="SignupScreen"
@@ -92,7 +94,7 @@ const Rootnavi = () => {
         <Stack.Screen
           name="WellcomeScreen"
           component={WellcomeScreen}
-          options={{ title: "Welcome" }}
+          options={{ title: "Welcome", headerBackVisible: false }}
         />
         {/* Bottom Tab Navigator sẽ nằm ở trong Stack */}
         <Stack.Screen
@@ -103,37 +105,51 @@ const Rootnavi = () => {
         <Stack.Screen
           name="CenterDetailScreen"
           component={CenterDetailScreen}
-          options={{ title: "Center Details", headerLeft: null }}
+          options={{ title: "Center Details" }}
         />
         <Stack.Screen
           name="ManageBookScreen"
           component={ManageBookScreen}
-          options={{ title: "ManageBook", headerLeft: null }}
+          options={{ title: "ManageBook" }}
         />
         <Stack.Screen
           name="ManageCarScreen"
           component={ManageCarScreen}
-          options={{ title: "ManageCar", headerLeft: null }}
+          options={{ title: "ManageCar" }}
         />
         <Stack.Screen
-          name="EditBookScreen"
-          component={EditBookScreen}
-          options={{ title: "EditBook", headerLeft: null }}
+          name="ListCenters"
+          component={ListCenters}
+          options={{ title: "List Centers " }}
         />
         <Stack.Screen
           name="ServiceDetailScreen"
           component={ServiceDetailScreen}
-          options={{ title: "Service Details", headerLeft: null }}
+          options={{ title: "Service Details", headerShown: null }}
         />
         <Stack.Screen
           name="ListServices"
           component={ListServices}
-          options={{ title: "Payment Screen ", headerLeft: null }}
+          options={{ title: "Payment Screen " }}
         />
         <Stack.Screen
           name="PaymentScreen"
           component={PaymentScreen}
-          options={{ title: "Payment Screen ", headerLeft: null }}
+          options={{
+            title: "Payment Screen ",
+            headerBackVisible: false,
+            header: null,
+          }}
+        />
+        <Stack.Screen
+          name="InforPersonal"
+          component={InforPersonal}
+          options={{ title: "InforPersonal Screen " }}
+        />
+        <Stack.Screen
+          name="ChangePasswordScreen"
+          component={ChangePasswordScreen}
+          options={{ title: "ChangePassword Screen " }}
         />
       </Stack.Navigator>
     </NavigationContainer>

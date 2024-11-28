@@ -8,6 +8,11 @@ const PaymentScreen = ({ route, navigation }) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
 
+  const renderScene = SceneMap({
+    active: ActiveTasks,
+    completed: CompletedTasks,
+    all: AllTasks,
+  });
   const handlePayment = async () => {
     // Thực hiện thanh toán (giả lập ở đây)
     try {
@@ -30,7 +35,7 @@ const PaymentScreen = ({ route, navigation }) => {
 
       if (data.success) {
         Alert.alert("Thanh toán thành công", "Cảm ơn bạn đã thanh toán!");
-        navigation.navigate("Home"); // Điều hướng về màn hình chính hoặc màn hình khác
+        navigation.navigate("Home");
       } else {
         Alert.alert("Lỗi thanh toán", data.message || "Có lỗi xảy ra.");
       }

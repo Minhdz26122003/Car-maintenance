@@ -5,6 +5,7 @@ import {
   TextInput,
   Button,
   StyleSheet,
+  TouchableOpacity,
   ScrollView,
   Alert,
 } from "react-native";
@@ -28,19 +29,19 @@ const BookingScreen = ({ navigation }) => {
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [errorMessage, setErrorMessage] = useState("");
-  const [date, setDate] = useState(new Date()); // Đảm bảo biến này luôn là đối tượng Date
+  const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [cars, setCars] = useState([]); // Lưu danh sách xe từ API
-  const [selectedCar, setSelectedCar] = useState(""); // Xe đã chọn
-  const [isNewCar, setIsNewCar] = useState(false); // Xác định có phải xe mới không
+  const [cars, setCars] = useState([]);
+  const [selectedCar, setSelectedCar] = useState("");
+  const [isNewCar, setIsNewCar] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await getUserData();
       if (userData) {
-        setUsername(userData.username); // Lấy username từ thông tin người dùng
+        setUsername(userData.username);
         setPhoneNumber(userData.sodienthoai);
         setIduser(userData.iduser);
       }
@@ -51,11 +52,11 @@ const BookingScreen = ({ navigation }) => {
       await loadCars();
     };
 
-    loadData(); // Load user data, centers, and cars
+    loadData();
     if (selectedCenter) {
       fetchServicesByCenter(selectedCenter);
     } else {
-      setServices([]); // Reset service list if no center is selected
+      setServices([]);
     }
   }, [selectedCenter]);
 
@@ -120,16 +121,16 @@ const BookingScreen = ({ navigation }) => {
     } else {
       setErrorMessage("");
       setShowDatePicker(false);
-      setDate(selected); // Lưu lại đối tượng Date đã chọn
+      setDate(selected);
     }
   };
 
   // xử lý khi thay đổi giờ
   const onChangeTime = (event, time) => {
     if (time) {
-      setSelectedTime(time); // Cập nhật giờ đã chọn
+      setSelectedTime(time);
     }
-    setShowTimePicker(false); // Ẩn TimePicker sau khi chọn
+    setShowTimePicker(false);
   };
 
   // lấy tên dịch vụ theo ID
@@ -143,7 +144,7 @@ const BookingScreen = ({ navigation }) => {
   const getCenterNames = (centerId) => {
     try {
       if (!centerId) {
-        return []; // Nếu centerId là null hoặc không phải là mảng, trả về mảng rỗng
+        return [];
       }
       return centers
         .filter((center) => centerId.includes(center.idtrungtam))
@@ -162,8 +163,8 @@ const BookingScreen = ({ navigation }) => {
   };
 
   const calculateTotalPrice = () => {
-    const selectedPrices = getPriceId(selectedServices); // Lấy giá của các dịch vụ đã chọn
-    const totalPrice = selectedPrices.reduce((acc, price) => acc + price, 0); // Tính tổng
+    const selectedPrices = getPriceId(selectedServices);
+    const totalPrice = selectedPrices.reduce((acc, price) => acc + price, 0);
     return formatPrice(totalPrice);
   };
 
@@ -179,7 +180,7 @@ const BookingScreen = ({ navigation }) => {
   const handleCarSelect = (value) => {
     setSelectedCar(value);
     if (value === "new") {
-      setIsNewCar(true); // Cho phép thêm xe mới nếu chọn 'Thêm xe mới'
+      setIsNewCar(true);
     } else {
       setIsNewCar(false);
       const selected = cars.find((car) => car.idxe === value);
@@ -191,7 +192,7 @@ const BookingScreen = ({ navigation }) => {
 
   const formatPrice = (giatri) => {
     if (giatri === undefined || giatri === null) {
-      return "0 ₫"; // hoặc giá trị mặc định mà bạn muốn hiển thị khi giá trị không hợp lệ
+      return "0 ₫";
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
   };
@@ -212,16 +213,14 @@ const BookingScreen = ({ navigation }) => {
       });
 
       const contentType = response.headers.get("content-type");
-      console.log("Content Type:", contentType); // Kiểm tra loại phản hồi
+      console.log("Content Type:", contentType);
 
-      // Kiểm tra nếu phản hồi không phải là JSON
       if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text(); // Lấy nội dung phản hồi dạng văn bản
+        const text = await response.text();
         console.error("Phản hồi không phải JSON:", text);
         throw new Error("Server không trả về JSON hợp lệ.");
       }
 
-      // Nếu phản hồi là JSON, tiếp tục xử lý
       const data = await response.json();
       if (data.success) {
         console.log("Thêm xe thành công");
@@ -240,18 +239,18 @@ const BookingScreen = ({ navigation }) => {
     setBiensoxe("");
     setCarBrand("");
     setYearcar("");
-    setCenters([]); // Nếu muốn làm sạch danh sách trung tâm
-    setSelectedCenter(null); // Đặt lại trung tâm đã chọn
-    setServices([]); // Nếu muốn làm sạch danh sách dịch vụ
-    setSelectedServices([]); // Đặt lại danh sách dịch vụ đã chọn
-    setSelectedDate(new Date()); // Đặt lại ngày đã chọn về hiện tại
+    setCenters([]);
+    setSelectedCenter(null);
+    setServices([]);
+    setSelectedServices([]);
+    setSelectedDate(new Date());
     setErrorMessage("");
-    setShowDatePicker(false); // Ẩn DatePicker
-    setShowTimePicker(false); // Ẩn TimePicker
-    setSelectedTime(new Date()); // Đặt lại giờ đã chọn về hiện tại
-    setCars([]); // Nếu muốn làm sạch danh sách xe
-    setSelectedCar(""); // Đặt lại xe đã chọn
-    setIsNewCar(false); // Đặt lại trạng thái xe mới
+    setShowDatePicker(false);
+    setShowTimePicker(false);
+    setSelectedTime(new Date());
+    setCars([]);
+    setSelectedCar("");
+    setIsNewCar(false);
   };
 
   // Xác nhận đặt lịch
@@ -261,9 +260,9 @@ const BookingScreen = ({ navigation }) => {
         iduser: iduser,
         idxe: selectedCar === "new" ? idxe : selectedCar,
         idtrungtam: selectedCenter,
-        selectedServices: selectedServices, // Gửi danh sách dịch vụ đã chọn
-        ngayhen: date.toISOString().split("T")[0], // Định dạng ngày YYYY-MM-DD
-        thoigianhen: `${selectedTime.getHours()}:${selectedTime.getMinutes()}`, // Định dạng giờ
+        selectedServices: selectedServices,
+        ngayhen: date.toISOString().split("T")[0],
+        thoigianhen: `${selectedTime.getHours()}:${selectedTime.getMinutes()}`,
       };
 
       const response = await fetch(`${url}/myapi/Lichhen/taolichhen.php`, {
@@ -291,51 +290,79 @@ const BookingScreen = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}>Đặt lịch bảo dưỡng ô tô</Text>
+        <Text style={styles.title}>Đặt lịch bảo dưỡng</Text>
 
+        <View>
+          <Text style={styles.label}>Chọn xe </Text>
+          <Picker
+            selectedValue={selectedCar}
+            onValueChange={(value) => handleCarSelect(value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Chọn xe" value="" />
+            {cars.map((car) => (
+              <Picker.Item
+                key={car.idxe}
+                label={car.hangxe + " - " + car.idxe}
+                value={car.idxe}
+              />
+            ))}
+            <Picker.Item label="Thêm xe mới" value="new" />
+          </Picker>
+        </View>
         {/* ComboBox để chọn xe */}
-        <Picker
-          selectedValue={selectedCar}
-          onValueChange={(value) => handleCarSelect(value)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Chọn xe" value="" />
-          {cars.map((car) => (
-            <Picker.Item
-              key={car.idxe}
-              label={car.hangxe + " - " + car.idxe}
-              value={car.idxe}
-            />
-          ))}
-          <Picker.Item label="Thêm xe mới" value="new" />
-        </Picker>
 
         {/* Form để nhập thông tin nếu là xe mới */}
         {isNewCar && (
-          <View style={styles.inputGroup}>
-            <TextInput
-              style={styles.input}
-              placeholder="Biển số xe"
-              value={idxe}
-              onChangeText={setBiensoxe}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Hãng xe"
-              value={hangxe}
-              onChangeText={setCarBrand}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Năm sản xuất"
-              value={namsx}
-              onChangeText={setYearcar}
-            />
+          <View style={styles.containeraddcar}>
+            <View style={styles.groupaddcar}>
+              <Text style={styles.textnewcar}>Biển số xe: </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Biển số xe"
+                value={idxe}
+                onChangeText={setBiensoxe}
+              />
+            </View>
+            <View style={styles.groupaddcar}>
+              <Text style={styles.textnewcar}>Hãng xe: </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Hãng xe"
+                value={hangxe}
+                onChangeText={setCarBrand}
+              />
+            </View>
+            <View style={styles.groupaddcar}>
+              <Text style={styles.textnewcar}>Năm sản xuất xe: </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Năm sản xuất"
+                value={namsx}
+                onChangeText={setYearcar}
+              />
+            </View>
+            {/* Nút thêm xe */}
+            {isNewCar && (
+              <TouchableOpacity
+                style={styles.btnaddcar}
+                title="Thêm xe"
+                onPress={Addxe}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 13,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Thêm xe
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
-
-        {/* Nút thêm xe */}
-        {isNewCar && <Button title="Thêm xe" onPress={Addxe} />}
 
         {/* Chọn trung tâm bảo dưỡng */}
         <View style={styles.inputGroup}>
@@ -384,16 +411,30 @@ const BookingScreen = ({ navigation }) => {
         )}
 
         {/* Chọn ngày và giờ */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>
+        <View style={styles.inputHours}>
+          <Text style={styles.labelHours}>
             Ngày đã chọn: {date.toLocaleDateString()}
           </Text>
 
           {/* Button để mở Date Picker */}
-          <Button title="Chọn ngày" onPress={() => setShowDatePicker(true)} />
+          <TouchableOpacity
+            style={styles.btnaddcar}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 13,
+                textAlign: "center",
+                fontWeight: "bold",
+              }}
+            >
+              Chọn ngày
+            </Text>
+          </TouchableOpacity>
           {showDatePicker && (
             <DateTimePicker
-              value={date} // Đảm bảo value là đối tượng Date
+              value={date}
               mode="date"
               display="default"
               onChange={onChangeDate}
@@ -404,19 +445,34 @@ const BookingScreen = ({ navigation }) => {
           ) : null}
         </View>
 
-        <View style={styles.inputGroup}>
+        <View style={styles.inputHours}>
           <Text style={{ fontSize: 10, color: "#ff0000" }}>
             *Khung giờ từ 9:00 - 22:00
           </Text>
-          <Text style={styles.label}>
+          <Text style={styles.labelHours}>
             Giờ đã chọn: {selectedTime.getHours()}:{selectedTime.getMinutes()}
           </Text>
           {/* Nút để mở TimePicker */}
-          <Button title="Chọn giờ" onPress={() => setShowTimePicker(true)} />
+          <TouchableOpacity
+            style={styles.btnaddcar}
+            title="Chọn giờ"
+            onPress={() => setShowTimePicker(true)}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 13,
+                textAlign: "center",
+                fontWeight: "bold",
+              }}
+            >
+              Chọn giờ
+            </Text>
+          </TouchableOpacity>
 
           {showTimePicker && (
             <DateTimePicker
-              value={selectedTime} // Sử dụng state cho giá trị giờ
+              value={selectedTime}
               mode="time"
               display="spinner"
               onChange={onChangeTime}
@@ -427,26 +483,76 @@ const BookingScreen = ({ navigation }) => {
         {/* Tóm tắt và xác nhận */}
         <View style={styles.summary}>
           <Text style={styles.summaryTitle}>Thông tin đặt lịch:</Text>
-          <Text>Tên: {username}</Text>
-          <Text>Số điện thoại: {sodienthoai}</Text>
-          <Text>Biển số xe: {idxe}</Text>
-          <Text>Trung tâm bảo dưỡng: {getCenterNames(selectedCenter)}</Text>
-          <Text>Dịch vụ: {getServiceNames(selectedServices).join(", ")}</Text>
+          <View style={styles.groupsumary}>
+            <Text>Tên: </Text>
+            <Text>{username}</Text>
+          </View>
+          <View style={styles.groupsumary}>
+            <Text>Số điện thoại: </Text>
+            <Text>{sodienthoai}</Text>
+          </View>
+          <View style={styles.groupsumary}>
+            <Text>Biển số xe: </Text>
+            <Text>{idxe}</Text>
+          </View>
+          <View style={styles.groupsumary}>
+            <Text>Trung tâm bảo dưỡng: </Text>
+            <Text>{getCenterNames(selectedCenter)}</Text>
+          </View>
+          <View style={styles.groupsumary}>
+            <Text>Dịch vụ: </Text>
+            <Text> {getServiceNames(selectedServices).join(", ")}</Text>
+          </View>
 
-          <Text>Ngày đã chọn: {date.toLocaleDateString()}</Text>
-          <Text>
-            Giờ đã chọn: {selectedTime.getHours()}:{selectedTime.getMinutes()}
-          </Text>
-          <Text style={{ color: "#ff0000", fontSize: 16 }}>
+          <View style={styles.groupsumary}>
+            <Text>Ngày đã chọn: </Text>
+            <Text> {date.toLocaleDateString()}</Text>
+          </View>
+          <View style={styles.groupsumary}>
+            <Text>Giờ đã chọn:</Text>
+            <Text>
+              {selectedTime.getHours()}:{selectedTime.getMinutes()}
+            </Text>
+          </View>
+
+          <Text
+            style={{
+              color: "#ff0000",
+              marginTop: 10,
+              paddingTop: 5,
+              fontSize: 16,
+              borderTopColor: "black",
+              borderTopWidth: 0.3,
+            }}
+          >
             Tổng tiền: {calculateTotalPrice()}
           </Text>
         </View>
 
-        <Button title="Xác nhận đặt lịch" onPress={confirmBooking} />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "green",
+            padding: 10,
+            borderRadius: 20,
+          }}
+          onPress={confirmBooking}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: 16,
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Xác nhận đặt lịch
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
 };
+clearImmediate;
 
 const styles = StyleSheet.create({
   container: {
@@ -454,36 +560,87 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
+    backgroundColor: "#f0f8ff",
     fontWeight: "bold",
-    marginBottom: 20,
+    padding: 10,
+    textAlign: "center",
+    borderRadius: 10,
+    marginBottom: 10,
   },
   error: {
     color: "red",
     marginTop: 10,
   },
+  containeraddcar: {
+    marginTop: 20,
+    borderColor: "#000000",
+    backgroundColor: "#f0f8ff",
+    borderWidth: 0.5,
+    alignItems: "center",
+    borderRadius: 10,
+    padding: 10,
+  },
+  textnewcar: {
+    marginRight: 10,
+  },
+  groupaddcar: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  btnaddcar: {
+    fontWeight: "bold",
+    backgroundColor: "green",
+
+    borderRadius: 10,
+    width: 150,
+    alignItems: "center",
+    padding: 10,
+  },
   inputGroup: {
     marginBottom: 20,
+    padding: 10,
+  },
+  inputHours: {
+    marginBottom: 20,
+  },
+  labelHours: {
+    backgroundColor: "#f0f8ff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 15,
+    marginBottom: 10,
+    borderColor: "red",
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 0.5,
   },
   input: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderColor: "#ccc",
-    paddingVertical: 10,
-    marginBottom: 10,
+    paddingVertical: 5,
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
+    marginTop: 15,
     marginBottom: 10,
   },
   picker: {
     height: 50,
     width: "100%",
+    borderWidth: 2,
+    borderColor: "blue",
+    borderRadius: 10,
+    padding: 20,
+    borderStyle: "solid",
+    backgroundColor: "#f0f8ff",
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    backgroundColor: "#f0f8ff",
   },
   checkboxLabel: {
     marginLeft: 10,
@@ -492,8 +649,22 @@ const styles = StyleSheet.create({
   datePicker: {
     width: "100%",
   },
+  groupsumary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+    marginVertical: 5,
+  },
   summary: {
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 20,
+    borderStyle: "solid",
+
+    backgroundColor: "#f0f8ff",
   },
   summaryTitle: {
     fontSize: 18,

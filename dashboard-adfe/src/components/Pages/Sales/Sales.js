@@ -52,8 +52,8 @@ const Sales = () => {
         `${url}myapi/Khuyenmai/tkiemmakm.php?giatri=${giatri}`
       );
       const sales = response.data.sales;
-      console.log("API Response:", sales); // Đảm bảo dữ liệu trả về là mảng
-      setSales(sales); // Cập nhật danh sáchtìm kiếm
+      console.log("API Response:", sales);
+      setSales(sales);
     } catch (error) {
       console.error("Error searching sales:", error);
     }
@@ -62,10 +62,10 @@ const Sales = () => {
   useEffect(() => {
     if (searchTerm) {
       console.log("Searching for:", searchTerm);
-      searchSales(searchTerm); // Gọi tìm kiếm khi có từ khóa
+      searchSales(searchTerm);
     } else {
       console.log("Fetching all sale");
-      fetchSales(); // Lấy tất cả tài khoản khi không có từ khóa tìm kiếm
+      fetchSales();
     }
   }, [searchTerm]);
 
@@ -101,7 +101,6 @@ const Sales = () => {
         console.error("Lỗi:", response.data.message);
       }
 
-      // Sau khi thêm thành công, đóng form và tải lại danh sách
       setOpenAdd(false);
       fetchSales();
     } catch (error) {
@@ -119,10 +118,8 @@ const Sales = () => {
   // SỬA KHUYẾN MÃI
   const handleEditSubmit = async () => {
     try {
-      // Gửi dữ liệu đã sửa về server
       await axios.put(`${url}myapi/Khuyenmai/suamakm.php`, selectedSale);
 
-      // Sau khi cập nhật thành công, đóng form và tải lại danh sách
       setOpenEdit(false);
       fetchSales();
     } catch (error) {
@@ -140,22 +137,19 @@ const Sales = () => {
 
   // XÓA KHUYẾN MÃI
   const handleDelete = async (id) => {
-    // Hiển thị hộp thoại xác nhận
     const confirmDelete = window.confirm(
       "Bạn có chắc chắn muốn xóa dịch vụ này không?"
     );
 
     if (!confirmDelete) {
-      // Nếu người dùng chọn "Cancel", không làm gì cả
       return;
     }
 
     try {
       await axios.delete(`${url}myapi/Khuyenmai/xoamakm.php`, {
-        data: { idkm: id }, // Gửi ID trong body của yêu cầu DELETE
+        data: { idkm: id },
       });
 
-      // Cập nhật danh sách sau khi xóa
       setSales(sales.filter((sale) => sale.idkm !== id));
     } catch (error) {
       console.error("Error deleting sale:", error);
@@ -164,7 +158,7 @@ const Sales = () => {
 
   const formatPrice = (giatri) => {
     if (giatri === undefined || giatri === null) {
-      return "0 ₫"; // hoặc giá trị mặc định mà bạn muốn hiển thị khi giá trị không hợp lệ
+      return "0 ₫";
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
   };

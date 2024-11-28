@@ -52,16 +52,28 @@ const Service = () => {
     }
   };
 
+  const checkData = async (newService) => {
+    if (
+      !newService.tendichvu ||
+      !newService.mota ||
+      !newService.gia ||
+      !newService.hinhanh ||
+      !newService.thoigianth
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+  };
   //TÌM KIẾM DỊCH VỤ
   const searchServices = async (tendichvu) => {
     try {
       const response = await axios.get(
         `${url}myapi/Dichvu/tkdichvu.php?tendichvu=${tendichvu}`
       );
-      console.log("Full API Response:", response.data); // Log toàn bộ phản hồi
+      console.log("Full API Response:", response.data);
       const services = response.data.services;
       console.log("API Response - services:", services);
-      setServices(services); // Cập nhật danh sách tìm kiếm
+      setServices(services);
     } catch (error) {
       console.error("Error searching services:", error);
     }
@@ -70,10 +82,10 @@ const Service = () => {
   useEffect(() => {
     if (searchTerm) {
       console.log("Searching for:", searchTerm);
-      searchServices(searchTerm); // Gọi tìm kiếm khi có từ khóa
+      searchServices(searchTerm);
     } else {
       console.log("Fetching all services");
-      fetchServices(); // Lấy tất cả tài khoản khi không có từ khóa tìm kiếm
+      fetchServices();
     }
   }, [searchTerm]);
 
@@ -86,13 +98,14 @@ const Service = () => {
   // THÊM DỊCH VỤ
   const handleAddSubmit = async (newService) => {
     try {
-      // Dữ liệu gửi đi dưới dạng JSON
+      checkData();
+
       const formData = new FormData();
       formData.append("tendichvu", newService.tendichvu);
       formData.append("mota", newService.mota);
-      formData.append("gia", parseFloat(newService.gia)); // Chuyển đổi thành số float
+      formData.append("gia", parseFloat(newService.gia));
       formData.append("hinhanh", newService.hinhanh);
-      formData.append("thoigianth", newService.thoigianth); // Bạn có thể cần xử lý định dạng thời gian nếu cần
+      formData.append("thoigianth", newService.thoigianth);
 
       const response = await axios.post(
         `${url}myapi/Dichvu/themdichvu.php`,
@@ -130,8 +143,6 @@ const Service = () => {
     try {
       // Gửi dữ liệu đã sửa về server
       await axios.put(`${url}myapi/Dichvu/suadichvu.php`, selectedService);
-
-      // Sau khi cập nhật thành công, đóng form và tải lại danh sách
       setOpenEdit(false);
       fetchServices();
     } catch (error) {
@@ -149,22 +160,19 @@ const Service = () => {
 
   // XÓA DỊCH VỤ
   const handleDelete = async (id) => {
-    // Hiển thị hộp thoại xác nhận
     const confirmDelete = window.confirm(
       "Bạn có chắc chắn muốn xóa tài khoản này không?"
     );
 
     if (!confirmDelete) {
-      // Nếu người dùng chọn "Cancel", không làm gì cả
       return;
     }
 
     try {
       await axios.delete(`${url}myapi/Dichvu/xoadichvu.php`, {
-        data: { iddichvu: id }, // Gửi ID trong body của yêu cầu DELETE
+        data: { iddichvu: id },
       });
 
-      // Cập nhật danh sách sau khi xóa
       setServices(services.filter((service) => service.iddichvu !== id));
     } catch (error) {
       console.error("Error deleting service:", error);
@@ -172,7 +180,7 @@ const Service = () => {
   };
   const formatPrice = (giatri) => {
     if (giatri === undefined || giatri === null) {
-      return "0 ₫"; // hoặc giá trị mặc định mà bạn muốn hiển thị khi giá trị không hợp lệ
+      return "0 ₫";
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
   };

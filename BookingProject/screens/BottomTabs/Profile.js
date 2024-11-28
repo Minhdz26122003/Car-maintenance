@@ -5,12 +5,15 @@ import {
   Image,
   FlatList,
   Alert,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
+import { Ionicons } from "@expo/vector-icons";
+import { version } from "../../package.json";
 
 const ProfileScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -35,7 +38,28 @@ const ProfileScreen = ({ navigation }) => {
 
     loadUserData();
   }, []);
-
+  const data = [
+    {
+      key: "QLX",
+      title: "Quản lý xe",
+      description: "Quản lý những chiếc xe",
+      icon: "car-sport-outline",
+      onPress: () => handleNavigate("ManageCarScreen"),
+    },
+    {
+      key: "QLLH",
+      title: "Quản lý lịch hẹn",
+      description: "Theo dõi trạng thái lịch hẹn của bạn",
+      icon: "bookmark-outline",
+      onPress: () => handleNavigate("ManageBookScreen"),
+    },
+    {
+      key: "DX",
+      title: "Đăng xuất",
+      icon: "log-out-outline",
+      onPress: () => handleLogout(),
+    },
+  ];
   const getUserData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("userData");
@@ -62,72 +86,37 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Thông tin người dùng */}
+      <View style={styles.profileHeader}>
+        <Image
+          source={require("D:/Documents/ReactJS/DoAn4/BookingProject/assets/account.jpg")}
+          style={styles.avatar}
+        />
+        <View style={styles.userInfo}>
+          <Text style={styles.username}>{username}</Text>
+          <TouchableOpacity onPress={() => handleNavigate("InforPersonal")}>
+            <Text style={styles.viewProfile}>Xem trang cá nhân</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* <Text>App Version: {version}</Text>; */}
+      </View>
+      {/* Các mục quản lý */}
       <FlatList
-        data={[
-          {
-            key: "profileHeader",
-            content: (
-              <View style={styles.profileHeader}>
-                <Image
-                  source={require("D:/Documents/ReactJS/DoAn4/BookingProject/assets/background1.jpg")}
-                  style={styles.avatar}
-                />
-                <Text style={styles.username}>{username}</Text>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => handleNavigate("EditProfileScreen")}
-                >
-                  <Text style={styles.editButtonText}>Chỉnh sửa</Text>
-                </TouchableOpacity>
+        data={data}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.listItem} onPress={item.onPress}>
+            <View style={styles.listItemContent}>
+              <Ionicons name={item.icon} size={24} color="#0078FF" />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{item.title}</Text>
+                {item.description && (
+                  <Text style={styles.listDescription}>{item.description}</Text>
+                )}
               </View>
-            ),
-          },
-          {
-            key: "manageCar",
-            content: (
-              <TouchableOpacity
-                style={styles.section}
-                onPress={() => handleNavigate("ManageCarScreen")}
-              >
-                <Text style={styles.sectionTitle}>Quản lý xe</Text>
-              </TouchableOpacity>
-            ),
-          },
-          {
-            key: "manageAppointment",
-            content: (
-              <TouchableOpacity
-                style={styles.section}
-                onPress={() => handleNavigate("ManageBookScreen")}
-              >
-                <Text style={styles.sectionTitle}>Quản lý lịch hẹn</Text>
-              </TouchableOpacity>
-            ),
-          },
-          {
-            key: "settings",
-            content: (
-              <TouchableOpacity
-                style={styles.section}
-                onPress={() => handleNavigate("SettingsScreen")}
-              >
-                <Text style={styles.sectionTitle}>Cài đặt</Text>
-              </TouchableOpacity>
-            ),
-          },
-          {
-            key: "logoutButton",
-            content: (
-              <TouchableOpacity
-                style={styles.logoutButton}
-                onPress={handleLogout}
-              >
-                <Text style={styles.logoutButtonText}>Đăng xuất</Text>
-              </TouchableOpacity>
-            ),
-          },
-        ]}
-        renderItem={({ item }) => item.content}
+            </View>
+          </TouchableOpacity>
+        )}
         keyExtractor={(item) => item.key}
       />
     </SafeAreaView>
@@ -137,59 +126,81 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    marginTop: 20,
-    backgroundColor: "#f9f9f9",
+    marginTop: 50,
+    backgroundColor: "#F5F5F5",
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E0E0E0",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  searchInput: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 5,
+    marginRight: 10,
   },
   profileHeader: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    backgroundColor: "#FFFFFF",
+    padding: 15,
+    marginVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+  },
+  userInfo: {
+    flex: 1,
   },
   username: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
+    color: "#333",
   },
-  editButton: {
-    backgroundColor: "#007bff",
-    padding: 10,
-    borderRadius: 5,
+  viewProfile: {
+    fontSize: 14,
+    color: "#0078FF",
+    marginTop: 5,
   },
-  editButtonText: {
-    color: "#fff",
-  },
-  section: {
-    marginBottom: 20,
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
     padding: 15,
-    backgroundColor: "#fff",
-    borderRadius: 5,
+    marginVertical: 5,
+    marginHorizontal: 8,
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
-    alignItems: "flex-start",
+    elevation: 2,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  logoutButton: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#ff4d4d",
-    borderRadius: 5,
+  listItemContent: {
+    flexDirection: "row",
     alignItems: "center",
   },
-  logoutButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+  listText: {
+    marginLeft: 15,
+  },
+  listTitle: {
     fontSize: 16,
+    fontWeight: "500",
+    color: "#333",
+  },
+  listDescription: {
+    fontSize: 14,
+    color: "#999",
   },
 });
 

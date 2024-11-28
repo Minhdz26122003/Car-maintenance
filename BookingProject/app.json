@@ -16,12 +16,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.nguyenngocminh.BookingProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "67f6f8ee-005f-4162-987a-f85982624cdc"
+      }
+    },
+    "scheme": "BookingProject"
   }
 }

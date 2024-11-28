@@ -118,7 +118,6 @@ const Account = () => {
       // Gửi dữ liệu đã sửa về server
       await axios.put(`${url}myapi/Taikhoan/suataikhoan.php`, selectedAccount);
 
-      // Sau khi cập nhật thành công, đóng form và tải lại danh sách tài khoản
       setOpenEdit(false);
       fetchAccounts();
       console.log("thanhcong");
@@ -144,13 +143,11 @@ const Account = () => {
 
   // XÓA TÀI KHOẢN
   const handleDelete = async (id) => {
-    // Hiển thị hộp thoại xác nhận
     const confirmDelete = window.confirm(
       "Bạn có chắc chắn muốn xóa tài khoản này không?"
     );
 
     if (!confirmDelete) {
-      // Nếu người dùng chọn "Cancel", không làm gì cả
       return;
     }
 
