@@ -16,6 +16,7 @@
 .sale-search-bar {
   position: static;
   max-width: 88%;
+  background-color: aliceblue;
   left: 170px;
   top: -20px;
 }

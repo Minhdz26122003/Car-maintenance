@@ -14,15 +14,19 @@ import {
   DialogTitle,
   TextField,
   Button,
-  Fab,
+  Tabs,
+  Tab,
   Box,
+  Typography,
 } from "@mui/material";
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
   Check as CheckIcon,
+  BorderAll,
 } from "@mui/icons-material";
+
 import axios from "axios";
 import ".././Booking/Booking.css"; // Import style riêng
 import url from "../../../ipconfixad.js";
@@ -33,11 +37,47 @@ const Booking = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [value, setValue] = useState(0);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  // Lọc lịch hẹn theo tab
+  const filteredAppointments = appointments.filter((appointment) => {
+    if (value === 0 && appointment.trangthai === 0) return true; // Chưa xác nhận
+    if (value === 1 && appointment.trangthai === 1) return true; // Đang thực hiện
+    if (value === 2 && appointment.trangthai === 2) return true; // Hoàn thành
+    if (value === 3 && appointment.trangthai === 3) return true; // Đã thanh toán
+    if (value === 4 && appointment.trangthai === 4) return true; // Đã hủy
+    return false;
+  });
+  const btnStatus = (trangThai) => {
+    switch (trangThai) {
+      case 0:
+        return { confirm: true, cancel: true, action: "confirm" }; // Action cho trạng thái 0
+      case 1:
+        return { confirm: true, cancel: false, action: "confirmActionFor1" };
+      case 2:
+        return { confirm: true, cancel: false, action: "confirmActionFor2" };
+      case 3:
+        return { confirm: false, cancel: false, action: null }; // Tắt hết khi trạng thái 3
+      case 4:
+        return { confirm: false, cancel: false, action: null }; // Tắt hết khi trạng thái 4
+      default:
+        return { confirm: false, cancel: false, action: null };
+    }
+  };
 
+  const { confirm, cancel } = btnStatus(value);
+  const convertTrangThai = (trangThai) => {
+    const trangThaiMap = {
+      0: "Chờ xác nhận",
+      1: "Đang thực hiên",
+      2: "Hoàn thành",
+      3: "Đã thanh toán",
+      4: "Đã hủy",
+    };
+    return trangThaiMap[trangThai] || "Không xác định";
+  };
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(`${url}myapi/Lichhen/getallLh.php`);
@@ -48,56 +88,36 @@ const Booking = () => {
   };
 
   // TÌM KIẾM LỊCH HẸN
-  const searchAppointments = async (date) => {
+  const searchAppointments = async (startDate, endDate) => {
     try {
+      if (!startDate || !endDate) {
+        console.error("Ngày bắt đầu và kết thúc không hợp lệ.");
+        return;
+      }
       const response = await axios.get(
-        `${url}myapi/Lichhen/tkLichhen.php?ngay=${date}`
+        `${url}myapi/Lichhen/tkLichhen.php?start_date=${startDate}&end_date=${endDate}`
       );
-      setAppointments(response.data.appointments); // Cập nhật danh sách lịch hẹn
+
+      // Cập nhật lịch hẹn
+      if (response.data.success) {
+        setAppointments(response.data.appointments);
+        console.log("Dữ liệu trả về:", response.data);
+      } else {
+        setAppointments([]); // Không có kết quả
+        console.error(response.data.message);
+      }
     } catch (error) {
-      console.error("Error searching appointments:", error);
+      console.error("Lỗi khi tìm kiếm lịch hẹn:", error);
     }
   };
 
   useEffect(() => {
-    if (searchTerm) {
-      searchAppointments(searchTerm);
+    if (startDate && endDate) {
+      searchAppointments(startDate, endDate);
     } else {
       fetchAppointments();
     }
-  }, [searchTerm]);
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  // // THÊM LỊCH HẸN
-  // const handleAddSubmit = async (newAppointment) => {
-  //   try {
-  //     const response = await axios.post(
-  //       `${url}myapi/Lichhen/themlh.php`,
-  //       newAppointment
-  //     );
-
-  //     if (response.data.success) {
-  //       fetchAppointments();
-  //       setOpenAdd(false);
-  //     } else {
-  //       console.error("Error:", response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding appointment:", error);
-  //   }
-  // };
-
-  // const handleAddClick = () => {
-  //   setSelectedAppointment({}); // Reset cho form thêm
-  //   setOpenAdd(true);
-  // };
-
-  // const handleAddClose = () => {
-  //   setOpenAdd(false);
-  // };
+  }, [startDate, endDate]);
 
   // SỬA LỊCH HẸN
   const handleEditSubmit = async () => {
@@ -147,9 +167,28 @@ const Booking = () => {
       console.error("Error deleting appointment:", error);
     }
   };
+  const handleConfirm = (action) => {
+    switch (action) {
+      case "confirm":
+        // Gọi API cho trạng thái 0
+        ConfirmBook();
+        break;
+      case "confirmActionFor1":
+        // Gọi API cho trạng thái 1
+        callApiForStatus1();
+        break;
+      case "confirmActionFor2":
+        // Gọi API cho trạng thái 2
+        callApiForStatus2();
+        break;
+      default:
+        // Nếu không có action, không làm gì
+        break;
+    }
+  };
 
   // XÁC NHẬN LỊCH HẸN
-  const handleConfirm = async (id) => {
+  const ConfirmBook = async (id) => {
     try {
       await axios.post(`${url}myapi/Lichhen/xacnhanLh.php`, { idlichhen: id });
       fetchAppointments();
@@ -157,23 +196,54 @@ const Booking = () => {
       console.error("Error confirming appointment:", error);
     }
   };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div>
-      <TextField
-        className="center-search-bar"
-        label="Tìm kiếm lịch hẹn"
-        variant="outlined"
-        type="date" // Đặt type là "date"
-        fullWidth
-        margin="normal"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        value={searchTerm}
-        onChange={handleSearch}
-      />
+      {/* Tab chọn trạng thái */}
+      <Tabs
+        className="tabstatus"
+        value={value}
+        onChange={handleChange}
+        aria-label="Appointment Status Tabs"
+      >
+        <Tab className="tabitem" label="Chưa xác nhận" />
+        <Tab className="tabitem" label="Đang thực hiện" />
+        <Tab className="tabitem" label="Hoàn thành" />
+        <Tab className="tabitem" label="Đã thanh toán" />
+        <Tab className="tabitem" label="Đã hủy" />
+      </Tabs>
 
+      {/* Tìm kiếm theo ngày */}
+
+      <Box className="book-search-bar">
+        <TextField
+          className="book-search-start"
+          label="Ngày bắt đầu"
+          variant="outlined"
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        <TextField
+          className="book-search-end"
+          label="Ngày kết thúc"
+          variant="outlined"
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </Box>
+
+      {/* Bảng lịch hẹn */}
       <TableContainer component={Paper} className="book-table-container">
         <Table aria-label="appointment table" className="book-table">
           <TableHead className="head-book">
@@ -191,8 +261,8 @@ const Booking = () => {
           </TableHead>
 
           <TableBody>
-            {appointments.length > 0 ? (
-              appointments.map((appointment) => (
+            {filteredAppointments.length > 0 ? (
+              filteredAppointments.map((appointment) => (
                 <TableRow key={appointment.idlichhen}>
                   <TableCell>{appointment.idlichhen}</TableCell>
                   <TableCell>{appointment.iduser}</TableCell>
@@ -201,26 +271,27 @@ const Booking = () => {
                   <TableCell>{appointment.tendichvu}</TableCell>
                   <TableCell>{appointment.ngayhen}</TableCell>
                   <TableCell>{appointment.thoigianhen}</TableCell>
-                  <TableCell>{appointment.trangthai}</TableCell>
+                  <TableCell>
+                    {convertTrangThai(appointment.trangthai)}
+                  </TableCell>
                   <TableCell className="book-table-actions">
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEdit(appointment)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleDelete(appointment.idlichhen)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                    <IconButton
-                      color="success"
-                      onClick={() => handleConfirm(appointment.idlichhen)}
-                    >
-                      <CheckIcon />
-                    </IconButton>
+                    {/* Hiển thị các nút dựa trên trạng thái */}
+                    {confirm && (
+                      <IconButton
+                        color="success"
+                        // onClick={() => handleConfirm(action)}
+                      >
+                        <CheckIcon />
+                      </IconButton>
+                    )}
+                    {cancel && (
+                      <IconButton
+                        color="warning"
+                        // onClick={() => handleConfirm(appointment.idlichhen)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

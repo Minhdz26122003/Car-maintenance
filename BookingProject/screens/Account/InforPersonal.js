@@ -14,7 +14,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
 import { Ionicons } from "@expo/vector-icons";
-
+import axios from "axios";
 const InforPersonal = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [iduser, setIduser] = useState("");
@@ -23,21 +23,24 @@ const InforPersonal = ({ navigation }) => {
   const [sodienthoai, setSodienthoai] = useState("");
   const [vaitro, setStatus] = useState("");
   const [email, setEmail] = useState("");
+
   useEffect(() => {
+    const loadUserData = async () => {
+      const userData = await getUserData();
+      if (userData) {
+        setIduser(userData.iduser);
+        // setUsername(userData.username);
+        // setPassword(userData.password);
+        // setDiachi(userData.diachi);
+        // setSodienthoai(userData.sodienthoai);
+        // setEmail(userData.email);
+        setStatus(userData.vaitro);
+        loadAccount(userData.iduser);
+      }
+    };
     loadUserData();
   }, []);
-  const loadUserData = async () => {
-    const userData = await getUserData();
-    if (userData) {
-      setIduser(userData.iduser);
-      setUsername(userData.username);
-      setPassword(userData.password);
-      setDiachi(userData.diachi);
-      setSodienthoai(userData.sodienthoai);
-      setEmail(userData.email);
-      setStatus(userData.vaitro);
-    }
-  };
+
   const getUserData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("userData");
@@ -47,7 +50,82 @@ const InforPersonal = ({ navigation }) => {
       return null;
     }
   };
+  const loadAccount = async (iduser) => {
+    try {
+      const response = await fetch(
+        `${url}/myapi/Taikhoan/gettkbyid.php?iduser=${iduser}`
+      );
+      const data = await response.json();
 
+      if (data.success && Array.isArray(data.tk) && data.tk.length > 0) {
+        // Lấy username từ phần tử đầu tiên
+        setUsername(data.tk[0].username);
+        setEmail(data.tk[0].email);
+        setDiachi(data.tk[0].diachi);
+        setSodienthoai(data.tk[0].sodienthoai);
+        setStatus(data.tk[0].vaitro);
+      } else {
+        console.log(
+          "Không tìm thấy tài khoản nào:",
+          data.message || "Lỗi không xác định"
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách tài khoản:", error);
+    }
+  };
+  // SỬA TÀI KHOẢN
+
+  const updateAccount = async (
+    iduser,
+    username,
+    email,
+    sodienthoai,
+    diachi
+  ) => {
+    try {
+      const requestBody = JSON.stringify({
+        iduser: iduser,
+        username: username,
+        email: email,
+        sodienthoai: sodienthoai,
+        diachi: diachi,
+      });
+
+      const response = await fetch(
+        `${url}myapi/Taikhoan/suataikhoanuser.php?iduser=${iduser}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: requestBody,
+        }
+      );
+
+      const data = await response.json();
+      // console.log(data); // Kiểm tra nội dung trả về
+
+      if (data.success) {
+        alert("Cập nhật tài khoản thành công");
+        navigation.goBack();
+      } else {
+        alert(`Cập nhật tài khoản không thành công: ${data.message}`);
+      }
+    } catch (error) {
+      console.log("Lỗi kết nối: " + error.message);
+      alert("Có lỗi xảy ra, vui lòng thử lại sau.");
+    }
+  };
+  const handleSave = async (userData) => {
+    // Lưu username mới vào AsyncStorage
+    try {
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+      navigation.goBack(); // Quay lại màn hình cá nhân
+    } catch (error) {
+      console.error("Lỗi lưu username:", error);
+    }
+  };
   const convertTrangThai = (setStatus) => {
     const trangThaiMap = {
       0: "Khách hàng",
@@ -70,15 +148,10 @@ const InforPersonal = ({ navigation }) => {
               source={require("D:/Documents/ReactJS/DoAn4/BookingProject/assets/account.jpg")}
               style={styles.avatar}
             />
-            <TouchableOpacity
-              style={styles.editAvatarButton}
-              onPress={() => alert("Change Avatar")}
-            >
+            <TouchableOpacity style={styles.editAvatarButton}>
               <Ionicons name="camera" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
-          {/* <Text style={styles.username}>{username}</Text>
-        <Text style={styles.userEmail}>{email}</Text> */}
         </View>
 
         <View style={styles.containerrow}>
@@ -91,7 +164,10 @@ const InforPersonal = ({ navigation }) => {
                 size={24}
                 color="#0078FF"
               />
-              <TextInput>{username}</TextInput>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+              ></TextInput>
             </View>
           </View>
           <View style={styles.inforrow}>
@@ -102,7 +178,7 @@ const InforPersonal = ({ navigation }) => {
                 size={24}
                 color="#0078FF"
               />
-              <TextInput>{email}</TextInput>
+              <TextInput value={email} onChangeText={setEmail}></TextInput>
             </View>
           </View>
           <View style={styles.inforrow}>
@@ -113,7 +189,7 @@ const InforPersonal = ({ navigation }) => {
                 size={24}
                 color="#0078FF"
               />
-              <TextInput>{diachi}</TextInput>
+              <TextInput value={diachi} onChangeText={setDiachi}></TextInput>
             </View>
           </View>
           <View style={styles.inforrow}>
@@ -124,7 +200,10 @@ const InforPersonal = ({ navigation }) => {
                 size={24}
                 color="#0078FF"
               />
-              <TextInput>{sodienthoai}</TextInput>
+              <TextInput
+                value={sodienthoai}
+                onChangeText={setSodienthoai}
+              ></TextInput>
             </View>
           </View>
         </View>
@@ -156,7 +235,12 @@ const InforPersonal = ({ navigation }) => {
         </View>
 
         <View style={styles.containerrow}>
-          <TouchableOpacity style={styles.btn} onPress={() => ds}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() =>
+              updateAccount(iduser, username, email, sodienthoai, diachi)
+            }
+          >
             <Text style={styles.btnText}> Cập nhật</Text>
           </TouchableOpacity>
         </View>

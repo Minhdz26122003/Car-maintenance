@@ -15,7 +15,6 @@ import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
 
 const CenterDetailScreen = ({ route, navigation }) => {
   const { item } = route.params; // Lấy dữ liệu trung tâm từ params
-  const { reviews, setReviews } = useState([]);
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState([]);
 
@@ -31,7 +30,12 @@ const CenterDetailScreen = ({ route, navigation }) => {
       console.error("Error fetching services:", error);
     }
   };
-
+  const formatPrice = (giatri) => {
+    if (giatri === undefined || giatri === null) {
+      return "0";
+    }
+    return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
+  };
   // const fetchReviews = async () => {
   //   try {
   //     const response = await fetch("API_URL"); // URL API của bạn
@@ -78,6 +82,7 @@ const CenterDetailScreen = ({ route, navigation }) => {
         </View>
 
         {/* Thông tin trung tâm */}
+
         <View>
           <View style={styles.garageInfoRow}>
             <Ionicons name="location-outline" size={20} color="#666" />
@@ -98,6 +103,7 @@ const CenterDetailScreen = ({ route, navigation }) => {
 
         {/* Danh sách dịch vụ */}
         <Text style={styles.serviceHeader}>Danh sách dịch vụ</Text>
+
         {services.length === 0 ? (
           <Text>Không có dịch vụ nào.</Text>
         ) : (
@@ -118,13 +124,26 @@ const CenterDetailScreen = ({ route, navigation }) => {
                   style={styles.serviceImage}
                 />
                 <View style={styles.serviceInfo}>
-                  <Text style={styles.serviceName}>{item.tendichvu}</Text>
+                  <Text
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                    style={styles.serviceName}
+                  >
+                    {item.tendichvu}
+                  </Text>
                   {item.gia && (
-                    <Text style={styles.servicePrice}>Giá: {item.gia} VND</Text>
+                    <Text style={styles.servicePrice}>
+                      Giá: {formatPrice(item.gia)}
+                    </Text>
                   )}
                 </View>
               </TouchableOpacity>
             )}
+            showsHorizontalScrollIndicator={true}
+            pagingEnabled={true} // Bật hiệu ứng cuộn từng phần tử (snap từng trang)
+            snapToAlignment="center" // Căn chỉnh phần tử tại vị trí giữa màn hình
+            snapToInterval={300} // Khoảng cách giữa các snap points (chiều rộng từng item)
+            decelerationRate="fast" // Cuộn mượt hơn (ngừng nhanh hơn khi không vuốt mạnh)
           />
         )}
 
@@ -190,46 +209,6 @@ const CenterDetailScreen = ({ route, navigation }) => {
 
         <View>
           <Text style={styles.serviceHeader}>Đánh Giá Trung Tâm</Text>
-          {/* Hiển thị tổng số sao */}
-          {/* <View style={styles.ratingRow}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Ionicons
-                key={index}
-                name={
-                  index < Math.floor(averageRating) ? "star" : "star-outline"
-                }
-                size={20}
-                color="gold"
-              />
-            ))}
-            <Text style={styles.ratingText}>{averageRating}</Text>
-          </View> */}
-
-          {/* Hiển thị danh sách đánh giá */}
-          {/* {loadingReviews ? (
-            <Text>Đang tải đánh giá...</Text>
-          ) : (
-            <FlatList
-              data={reviews} // dữ liệu từ API
-              renderItem={({ item }) => (
-                <View style={styles.reviewItem}>
-                  <Text style={styles.reviewerName}>{item.reviewerName}</Text>
-                  <View style={styles.ratingRow}>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Ionicons
-                        key={index}
-                        name={index < item.rating ? "star" : "star-outline"}
-                        size={16}
-                        color="gold"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.reviewText}>{item.comment}</Text>
-                </View>
-              )}
-              keyExtractor={(item) => item.id.toString()}
-            />
-          )} */}
         </View>
       </View>
     </ScrollView>
@@ -314,7 +293,8 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   serviceCard: {
-    flexDirection: "row", // Hình ảnh bên trái, thông tin bên phải
+    flexDirection: "row",
+    width: 250,
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
@@ -324,20 +304,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 2, // Tạo đổ bóng cho card
+    elevation: 2,
     alignItems: "center",
   },
   serviceImage: {
     width: 80,
     height: 80,
     borderRadius: 10,
-    marginRight: 15, // Khoảng cách giữa ảnh và phần thông tin
+    marginRight: 15,
   },
   serviceInfo: {
-    flex: 1, // Chiếm toàn bộ phần còn lại của thẻ
+    flex: 1,
   },
   serviceName: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,

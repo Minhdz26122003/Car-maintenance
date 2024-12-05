@@ -1,0 +1,36 @@
+/* Animation cho nút */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topbar {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.profile-icon {
+  align-content: space-around;
+  display: block;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.logout-btn {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #f5f5f5;
+  transform: scale(1.05);
+}

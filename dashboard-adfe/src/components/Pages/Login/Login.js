@@ -1,40 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Box, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 import url from "../../../ipconfixad.js";
 
 const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(
+    JSON.parse(localStorage.getItem("rememberMe")) || false
+  );
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  // Hàm quản lý localStorage
+  const handleLocalStorage = (remember, user = "", pass = "") => {
+    if (remember) {
+      localStorage.setItem("username", user);
+      localStorage.setItem("password", pass);
+      localStorage.setItem("rememberMe", true);
+      sessionStorage.setItem("username", user);
+    } else {
+      localStorage.removeItem("username");
+      localStorage.removeItem("password");
+      localStorage.removeItem("rememberMe");
+      sessionStorage.setItem("username", user);
+    }
+  };
+
+  useEffect(() => {
+    if (rememberMe) {
+      const savedUsername = localStorage.getItem("username");
+      const savedPassword = localStorage.getItem("password");
+      if (savedUsername && savedPassword) {
+        setUsername(savedUsername);
+        setPassword(savedPassword);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Gửi yêu cầu đăng nhập đến API
     try {
       const response = await fetch(`${url}myapi/dangnhapad.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }), // Gửi thông tin đăng nhập
+        body: JSON.stringify({ username, password }),
       });
+
+      if (!response.ok) {
+        throw new Error("Không thể kết nối đến server.");
+      }
 
       const data = await response.json();
 
       if (data.success) {
-        onLogin(data.user); // Lưu thông tin người dùng
-        navigate("/"); // Điều hướng đến trang chính
+        onLogin(data.user, rememberMe);
+        handleLocalStorage(rememberMe, username, password);
+        navigate("/");
       } else {
-        setError(data.message); // Hiển thị thông báo lỗi
+        setError(data.message || "Đăng nhập thất bại.");
       }
     } catch (err) {
-      setError("Có lỗi xảy ra. Vui lòng thử lại."); // Xử lý lỗi
+      setError(err.message || "Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
-
   return (
     <Box
       component="form"
@@ -68,6 +107,15 @@ const LoginPage = ({ onLogin }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         margin="normal"
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+        }
+        label="Ghi nhớ đăng nhập"
       />
       {error && <Typography color="error">{error}</Typography>}
       <Button type="submit" variant="contained" color="primary" fullWidth>

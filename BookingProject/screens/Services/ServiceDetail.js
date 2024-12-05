@@ -25,7 +25,7 @@ const ServiceDetailScreen = ({ route, navigation }) => {
     if (giatri === undefined || giatri === null) {
       return "0";
     }
-    return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
   };
   const benefits = [
     {
@@ -50,92 +50,96 @@ const ServiceDetailScreen = ({ route, navigation }) => {
     },
   ];
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        {/* Hình ảnh dịch vụ */}
-        <Image source={{ uri: item.hinhanh }} style={styles.serviceImage} />
-        <Text style={styles.textname}>{item.tendichvu}</Text>
+    <View style={{ paddingBottom: 40 }}>
+      <ScrollView>
+        <View style={styles.container}>
+          {/* Hình ảnh dịch vụ */}
+          <Image source={{ uri: item.hinhanh }} style={styles.serviceImage} />
+          <Text style={styles.textname}>{item.tendichvu}</Text>
 
-        {/* Tính năng đánh giá sao */}
-        <View style={styles.starRatingContainer}>
-          <Text style={styles.tittle}>Đánh giá:</Text>
-          <View style={styles.starContainer}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <TouchableOpacity
-                key={star}
-                onPress={() => setRating(star)}
-                style={styles.starButton}
-              >
-                <FontAwesome
-                  name={star <= rating ? "star" : "star-o"} // Hiển thị sao đầy hoặc rỗng
-                  size={24}
-                  color="#FFD700"
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-        {/* Phần About (Mô tả dịch vụ) */}
-        <View>
-          <View style={styles.headerText}>
-            <Text style={styles.tittle}>Mô tả:</Text>
-            <Text style={styles.aboutmota}>
-              {isExpanded ? item.mota : `${item.mota.slice(0, 50)}...`}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
-            <Text style={styles.seeMore}>
-              {isExpanded ? "Thu gọn <" : "Xem thêm >"}
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.headerText}>
-            <Text style={styles.tittle}>Giá tiền :</Text>
-            <Text style={styles.about}> {formatPrice(item.gia)} VNĐ</Text>
-          </View>
-          <View style={styles.headerText}>
-            <Text style={styles.tittle}>Thời gian làm :</Text>
-            <Text style={styles.about}>{item.thoigianth}</Text>
-            <Text style={styles.about}>giờ</Text>
-          </View>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.buttonDL}
-              onPress={() => navigation.navigate("Booking", { item })}
-            >
-              <Text>Đặt lịch ngay</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* Thời gian làm việc */}
-        <View>
-          <Text style={styles.sectionTitle}>
-            Tại sao chọn dịch vụ của chúng tôi?
-          </Text>
-          <View style={styles.advantage}>
-            {benefits.map((benefit, index) => (
-              <View key={index} style={styles.advantageRow}>
+          {/* Tính năng đánh giá sao */}
+          <View style={styles.starRatingContainer}>
+            <Text style={styles.tittle}>Đánh giá:</Text>
+            <View style={styles.starContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity
-                  style={styles.rowHeader}
-                  onPress={() => toggleExpand(index)}
+                  key={star}
+                  onPress={() => setRating(star)}
+                  style={styles.starButton}
                 >
-                  <Text style={styles.dayText}>{benefit.title}</Text>
-                  <Ionicons
-                    name={
-                      expanded.includes(index) ? "chevron-up" : "chevron-down"
-                    }
+                  <FontAwesome
+                    name={star <= rating ? "star" : "star-o"}
                     size={24}
-                    color="#333"
+                    color="#FFD700"
                   />
                 </TouchableOpacity>
-                {expanded.includes(index) && (
-                  <Text style={styles.timeText}>{benefit.detail}</Text>
-                )}
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
+          {/* Phần About (Mô tả dịch vụ) */}
+          <View>
+            <View style={styles.headerText}>
+              <Text style={styles.tittle}>Mô tả:</Text>
+              <Text style={styles.aboutmota}>
+                {isExpanded ? item.mota : `${item.mota.slice(0, 50)}...`}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
+              <Text style={styles.seeMore}>
+                {isExpanded ? "Thu gọn <" : "Xem thêm >"}
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.headerText}>
+              <Text style={styles.tittle}>Giá tiền :</Text>
+              <Text style={styles.about}> {formatPrice(item.gia)}</Text>
+            </View>
+            <View style={styles.headerText}>
+              <Text style={styles.tittle}>Thời gian làm :</Text>
+              <Text style={styles.about}>{item.thoigianth}</Text>
+              <Text style={styles.about}>giờ</Text>
+            </View>
+          </View>
+          {/* Thời gian làm việc */}
+          <View>
+            <Text style={styles.sectionTitle}>
+              Tại sao chọn dịch vụ của chúng tôi?
+            </Text>
+            <View>
+              {benefits.map((benefit, index) => (
+                <View key={index} style={styles.advantageRow}>
+                  <TouchableOpacity
+                    style={styles.rowHeader}
+                    onPress={() => toggleExpand(index)}
+                  >
+                    <Text style={styles.dayText}>{benefit.title}</Text>
+                    <Ionicons
+                      name={
+                        expanded.includes(index) ? "chevron-up" : "chevron-down"
+                      }
+                      size={24}
+                      color="#333"
+                    />
+                  </TouchableOpacity>
+                  {expanded.includes(index) && (
+                    <Text style={styles.timeText}>{benefit.detail}</Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View></View>
         </View>
+      </ScrollView>
+      <View style={styles.conatinerBtn}>
+        <TouchableOpacity
+          style={styles.buttonDL}
+          onPress={() => navigation.navigate("Booking", { item })}
+        >
+          <Text>Đặt lịch ngay</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -192,30 +196,37 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 10,
   },
+  conatinerBtn: {
+    position: "absolute",
+    bottom: 15,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 10,
+  },
   buttonDL: {
     fontWeight: "bold",
     backgroundColor: "#ffd700",
-    borderRadius: 10,
-    width: 150,
+    width: 400,
+
     alignItems: "center",
-    padding: 10,
+    borderRadius: 20,
+    padding: 15,
   },
+
   sectionTitle: {
     fontSize: 15,
+    marginTop: 20,
     fontWeight: "bold",
-
-    marginBottom: 10,
   },
   textname: {
     fontSize: 20,
     marginBottom: 10,
     fontWeight: "bold",
   },
-  advantage: {
-    marginBottom: 20,
-  },
+
   advantageRow: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   rowHeader: {
     flexDirection: "row",
@@ -226,8 +237,8 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
   },
   dayText: {
-    fontSize: 13,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "400",
     flex: 1,
   },
   timeText: {
@@ -251,7 +262,7 @@ const styles = StyleSheet.create({
   seeMore: {
     color: "red",
     marginVertical: 8,
-    marginLeft: 5,
+
     fontSize: 12,
   },
 });

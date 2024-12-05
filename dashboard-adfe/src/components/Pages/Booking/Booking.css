@@ -3,18 +3,48 @@
   position: relative;
   left: 170px;
   max-width: 88%;
-  margin-top: -30px;
 }
+.tabstatus {
+  position: relative;
+  left: 170px;
+  font-weight: bold;
+  background-color: aliceblue;
+  max-width: 88%;
+  margin-bottom: 20px;
+}
+/* CSS */
+.MuiTabs-root .MuiTab-root.Mui-selected {
+  background-color: #bee6ff; /* Màu nền khi active */
+}
+
+.tabitem {
+  border: 0.5px solid black;
+  font-weight: bold;
+  margin: 0 4px;
+  border-radius: 4px;
+}
+
 .head-book th {
-  background-color: rgb(236, 209, 210);
+  background-color: rgb(245, 215, 216);
   font-weight: bold;
   font-size: 16px;
 }
 .book-search-bar {
-  position: static;
-  max-width: 88%;
-  left: 170px;
-  top: -20px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 170px;
+  background-color: rgb(245, 253, 255);
+  padding: 10px;
+  max-width: 50%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.book-search-start {
+  width: 400px;
+}
+.book-search-end {
+  width: 400px;
 }
 .book-table {
   border-collapse: collapse;

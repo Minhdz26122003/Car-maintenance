@@ -116,7 +116,7 @@ const LoginScreen = ({ navigation }) => {
       }
 
       const data = await response.json();
-      console.log("Response data:", data);
+      // console.log("Response data:", data);
 
       if (data.success) {
         const userData = {
@@ -131,7 +131,7 @@ const LoginScreen = ({ navigation }) => {
         await storeUserData(userData);
         setEmail("");
         setPassword("");
-        printStoredData();
+
         // Chuyển hướng tới trang "HomeTabs"
         navigation.replace("HomeTabs", { username: data.user.username });
       } else {
@@ -142,18 +142,7 @@ const LoginScreen = ({ navigation }) => {
       Alert.alert("Lỗi", "Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
-  const printStoredData = async () => {
-    try {
-      const userData = await AsyncStorage.getItem("userData");
-      if (userData) {
-        console.log("Stored User Data:", JSON.parse(userData));
-      } else {
-        console.log("No data found in AsyncStorage.");
-      }
-    } catch (error) {
-      console.error("Error fetching stored data:", error);
-    }
-  };
+
   return (
     <View style={styles.container}>
       <Image

@@ -9,7 +9,6 @@ const Profile = ({ user, onUpdate }) => {
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
 
-  // Sử dụng useEffect để cập nhật các state khi user thay đổi
   useEffect(() => {
     if (user) {
       setUsername(user.username || ""); // Kiểm tra và gán giá trị mặc định
@@ -40,7 +39,7 @@ const Profile = ({ user, onUpdate }) => {
       const data = await response.json();
 
       if (data.success) {
-        onUpdate(data.user); // Cập nhật thông tin người dùng trên App.js
+        onUpdate(data.user);
         console.log("Cập nhật thành công");
       } else {
         console.error(data.message); // Hiển thị thông báo lỗi

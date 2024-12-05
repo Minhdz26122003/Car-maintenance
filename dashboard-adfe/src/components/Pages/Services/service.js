@@ -13,8 +13,10 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Slider,
   Button,
   Fab,
+  Typography,
   Box,
 } from "@mui/material";
 import {
@@ -35,9 +37,11 @@ const Service = () => {
     hinhanh: "",
     thoigianth: "",
   });
-  const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa dich vu
+  const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm dich vu
   const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
+  const [priceRange, setPriceRange] = useState([0, 10000000]);
+  const [expandedRows, setExpandedRows] = useState({});
 
   useEffect(() => {
     fetchServices();
@@ -65,11 +69,17 @@ const Service = () => {
     }
   };
   //TÌM KIẾM DỊCH VỤ
-  const searchServices = async (tendichvu) => {
+  const searchServices = async (tendichvu, priceRange) => {
     try {
-      const response = await axios.get(
-        `${url}myapi/Dichvu/tkdichvu.php?tendichvu=${tendichvu}`
-      );
+      const [minPrice, maxPrice] = priceRange;
+      const response = await axios.get(`${url}myapi/Dichvu/tktheogia.php`, {
+        params: {
+          tendichvu: tendichvu,
+          minPrice: minPrice, // Giá tối thiểu
+          maxPrice: maxPrice, // Giá tối đa
+        },
+      });
+
       console.log("Full API Response:", response.data);
       const services = response.data.services;
       console.log("API Response - services:", services);
@@ -78,16 +88,17 @@ const Service = () => {
       console.error("Error searching services:", error);
     }
   };
+
   // Gọi API để lấy tất cả khi component được load lần đầu
   useEffect(() => {
-    if (searchTerm) {
-      console.log("Searching for:", searchTerm);
-      searchServices(searchTerm);
+    if (searchTerm || priceRange) {
+      console.log("Searching for:", searchTerm, "Price Range:", priceRange);
+      searchServices(searchTerm, priceRange);
     } else {
       console.log("Fetching all services");
       fetchServices();
     }
-  }, [searchTerm]);
+  }, [searchTerm, priceRange]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -185,19 +196,36 @@ const Service = () => {
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
   };
 
+  const toggleExpand = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Đảo trạng thái mở rộng/thu gọn
+    }));
+  };
+
   return (
     <div>
       {/* Thanh tìm kiếm */}
-      <TextField
-        className="service-search-bar"
-        label="Tìm kiếm dịch vụ"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={handleSearch}
-        placeholder="Tìm kiếm theo tên dich vụ"
-      />
+      <Box className="service-search-bar">
+        <TextField
+          className="service-search-text"
+          label="Tìm kiếm dịch vụ"
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Tìm kiếm theo tên dich vụ"
+        />
+        <Typography className="search-text"> Giá tiền</Typography>
+        <Slider
+          className="service-search-price"
+          value={priceRange}
+          onChange={(e, newValue) => setPriceRange(newValue)}
+          valueLabelDisplay="auto"
+          min={0}
+          max={10000000}
+          step={100000}
+        />
+      </Box>
 
       <TableContainer component={Paper} className="service-table-container">
         <Table aria-label="service table" className="service-table">
@@ -221,7 +249,35 @@ const Service = () => {
                 <TableRow key={service.iddichvu}>
                   <TableCell>{service.iddichvu}</TableCell>
                   <TableCell>{service.tendichvu}</TableCell>
-                  <TableCell>{service.mota}</TableCell>
+                  <TableCell>
+                    {expandedRows[service.iddichvu] ? (
+                      <>
+                        {service.mota}{" "}
+                        <Button
+                          color="primary"
+                          size="small"
+                          onClick={() => toggleExpand(service.iddichvu)}
+                        >
+                          Thu gọn
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        {service.mota.length > 100
+                          ? `${service.mota.slice(0, 100)}...`
+                          : service.mota}
+                        {service.mota.length > 100 && (
+                          <Button
+                            color="primary"
+                            size="small"
+                            onClick={() => toggleExpand(service.iddichvu)}
+                          >
+                            Xem thêm
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </TableCell>
                   <TableCell>{formatPrice(service.gia)}</TableCell>
                   <TableCell>
                     <img

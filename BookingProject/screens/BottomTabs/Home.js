@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   FlatList,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/Ionicons";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
@@ -19,6 +20,7 @@ const HomeScreen = ({ navigation }) => {
   const [services, setServices] = useState([]);
   const [centers, setCenters] = useState([]);
   const [username, setUsername] = useState("");
+  const [iduser, setIduser] = useState("");
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [diachi, setDiachi] = useState("");
@@ -26,25 +28,27 @@ const HomeScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [vaitro, setVaitro] = useState("");
 
-  // Fetch data from APIs
-  useEffect(() => {
-    const loadUserData = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setUsername(userData.username);
-        setPassword(userData.password);
-        setDiachi(userData.diachi);
-        setSodienthoai(userData.sodienthoai);
-        setEmail(userData.email);
-        setVaitro(userData.vaitro);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadUserData = async () => {
+        const userData = await getUserData();
+        if (userData) {
+          setIduser(userData.iduser);
+          // setUsername(userData.username);
+          // setPassword(userData.password);
+          // setDiachi(userData.diachi);
+          // setSodienthoai(userData.sodienthoai);
+          // setEmail(userData.email);
+          // setVaitro(userData.vaitro);
+          loadAccount(userData.iduser);
+        }
+      };
 
-    loadUserData();
-    fetchServices();
-    fetchCenters();
-  }, []);
-
+      loadUserData();
+      fetchServices();
+      fetchCenters();
+    }, [])
+  );
   const getUserData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("userData");
@@ -52,6 +56,27 @@ const HomeScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Lỗi lấy thông tin người dùng:", error);
       return null;
+    }
+  };
+
+  const loadAccount = async (iduser) => {
+    try {
+      const response = await fetch(
+        `${url}/myapi/Taikhoan/gettkbyid.php?iduser=${iduser}`
+      );
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.tk) && data.tk.length > 0) {
+        // Lấy username từ phần tử đầu tiên
+        setUsername(data.tk[0].username);
+      } else {
+        console.log(
+          "Không tìm thấy tài khoản nào:",
+          data.message || "Lỗi không xác định"
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách tài khoản:", error);
     }
   };
 
@@ -158,7 +183,7 @@ const HomeScreen = ({ navigation }) => {
                       />
                       <Text
                         style={styles.serviceName}
-                        numberOfLines={1}
+                        numberOfLines={2}
                         ellipsizeMode="tail"
                       >
                         {item.tendichvu}
@@ -293,8 +318,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   serviceName: {
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: 12,
     textAlign: "center",
   },
   gara: {
@@ -305,7 +329,6 @@ const styles = StyleSheet.create({
   },
   service: {
     width: 50,
-    paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

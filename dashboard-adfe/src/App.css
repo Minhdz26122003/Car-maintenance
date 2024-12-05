@@ -17,9 +17,9 @@
   color: var(--black);
   background: linear-gradient(
     106.37deg,
-    #cbdedc 29.63%,
-    #edd8e3 51.55%,
-    #d0dce7 90.85%
+    #e2efee 29.63%,
+    #f4e9ee 51.55%,
+    #e4ebf1 90.85%
   );
   height: 100vh;
   display: flex;

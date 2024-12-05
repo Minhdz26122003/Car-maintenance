@@ -82,7 +82,6 @@ const ChangePasswordScreen = ({ navigation }) => {
         Alert.alert("Thành công", "Đăng ký thành công. Hãy đăng nhập.");
         setPassword("");
         setUsername("");
-        navigation.navigate("LoginScreen");
       } else {
         Alert.alert("Đăng ký thất bại", data.message);
       }

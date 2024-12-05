@@ -12,7 +12,7 @@ import CenterDetailScreen from "../screens/Center/CenterDetail";
 import ManageBookScreen from "../screens/Book/ManageBook";
 import ManageCarScreen from "../screens/Car/ManageCar";
 import ServiceDetailScreen from "../screens/Services/ServiceDetail";
-import PaymentScreen from "../screens/payments";
+import PaymentScreen from "../screens/Payments/payments";
 import ListServices from "../screens/Services/ListServices";
 import InforPersonal from "../screens/Account/InforPersonal";
 import ListCenters from "../screens/Center/ListCenter";
@@ -125,7 +125,7 @@ const Rootnavi = () => {
         <Stack.Screen
           name="ServiceDetailScreen"
           component={ServiceDetailScreen}
-          options={{ title: "Service Details", headerShown: null }}
+          options={{ title: "Service Details", headerBackVisible: true }}
         />
         <Stack.Screen
           name="ListServices"
@@ -138,7 +138,6 @@ const Rootnavi = () => {
           options={{
             title: "Payment Screen ",
             headerBackVisible: false,
-            header: null,
           }}
         />
         <Stack.Screen

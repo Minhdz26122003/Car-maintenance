@@ -7,15 +7,18 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  TextInput,
+  Modal,
   Dimensions,
   StyleSheet,
+  RefreshControl,
   ScrollView,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const ManageBookScreen = ({ navigation }) => {
   const [lichHenList, setLichHenList] = useState([]);
@@ -23,7 +26,7 @@ const ManageBookScreen = ({ navigation }) => {
   const [lichHenList2, setLichHenList2] = useState([]);
   const [lichHenList3, setLichHenList3] = useState([]);
   const [lichHenList4, setLichHenList4] = useState([]);
-  const [lichHenList5, setLichHenList5] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [iduser, setIduser] = useState("");
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -32,15 +35,15 @@ const ManageBookScreen = ({ navigation }) => {
     { key: "inprogress", title: "Đang thực hiện" },
     { key: "completed", title: "Hoàn thành" },
     { key: "paymented", title: "Đã thanh toán" },
-    { key: "canceled", title: "Hoàn thành" },
+    { key: "canceled", title: "Đã hủy" },
   ]);
 
   const renderScene = SceneMap({
     waitconfirm: () => <TabWaitConfirm lichHenList={lichHenList} />,
-    inprogress: () => <TabInProgress title="Đang thực hiên" />,
-    completed: () => <TabCompleted title="Hoàn thành" />,
-    paymented: () => <TabPlaceholder title="Đã thanh toán" />,
-    canceled: () => <TabCanceled title="Đã hủy" />,
+    inprogress: () => <TabInProgress lichHenList1={lichHenList1} />,
+    completed: () => <TabCompleted lichHenList2={lichHenList2} />,
+    paymented: () => <TabPaymented lichHenList3={lichHenList3} />,
+    canceled: () => <TabCanceled lichHenList4={lichHenList4} />,
   });
 
   // Hàm chuyển đổi trạng thái lịch hẹn
@@ -65,18 +68,49 @@ const ManageBookScreen = ({ navigation }) => {
     }
   };
   // Load thông tin người dùng
-  useEffect(() => {
-    const loadUserData = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setIduser(userData.iduser);
-        getLichHenchuaconfirm(userData.iduser);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadUserData();
+    }, [])
+  );
+  const loadUserData = async () => {
+    const userData = await getUserData();
+    if (userData) {
+      setIduser(userData.iduser);
+      getLichHenchuaconfirm(userData.iduser);
+      getLichHendangthuchien(userData.iduser);
+      getLichHenhoanthanh(userData.iduser);
+      getLichHendapay(userData.iduser);
+      getLichHendahuy(userData.iduser);
+    }
+  };
+  const Huylich = async (idlichhen, lyDo) => {
+    try {
+      const response = await axios.post(
+        `${url}myapi/Lichhen/huylichhen.php?idlichhen=${idlichhen}`,
+        {
+          idlichhen: idlichhen,
+          lydohuy: lyDo,
+        }
+      );
+
+      if (response.data.success) {
+        Alert.alert("Thành công", "Lịch hẹn đã được hủy thành công.");
+        getLichHenchuaconfirm(iduser);
+      } else {
+        Alert.alert(
+          "Lỗi",
+          response.data.message || "Hủy lịch không thành công."
+        );
       }
-    };
-    loadUserData();
-  }, []);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Lỗi", "Không thể kết nối với máy chủ.");
+    }
+  };
 
   const getLichHenchuaconfirm = async (iduser) => {
+    setRefreshing(true);
     try {
       const response = await axios.get(
         `${url}myapi/Lichhen/getLhchuaxacnhan.php?iduser=${iduser}`,
@@ -94,11 +128,13 @@ const ManageBookScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+    setRefreshing(false);
   };
   const getLichHendangthuchien = async (iduser) => {
+    setRefreshing(true);
     try {
       const response = await axios.get(
-        `${url}myapi/Lichhen/getLhchuathanhtoan.php?iduser=${iduser}`,
+        `${url}myapi/Lichhen/getLhdangthuchien.php?iduser=${iduser}`,
         {
           params: { iduser },
         }
@@ -113,8 +149,10 @@ const ManageBookScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+    setRefreshing(false);
   };
   const getLichHenhoanthanh = async (iduser) => {
+    setRefreshing(true);
     try {
       const response = await axios.get(
         `${url}myapi/Lichhen/getLhhoanthanh.php?iduser=${iduser}`,
@@ -132,8 +170,10 @@ const ManageBookScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+    setRefreshing(false);
   };
   const getLichHendapay = async (iduser) => {
+    setRefreshing(true);
     try {
       const response = await axios.get(
         `${url}myapi/Lichhen/getLhdathanhtoan.php?iduser=${iduser}`,
@@ -151,8 +191,10 @@ const ManageBookScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+    setRefreshing(false);
   };
   const getLichHendahuy = async (iduser) => {
+    setRefreshing(true);
     try {
       const response = await axios.get(
         `${url}myapi/Lichhen/getLhdahuy.php?iduser=${iduser}`,
@@ -170,15 +212,33 @@ const ManageBookScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+    setRefreshing(false);
   };
 
   // Tab hiển thị chờ xác nhận
-  const TabWaitConfirm = ({ lichHenList }) => (
-    <View style={styles.tabContainer}>
-      <SafeAreaView>
-        {loading ? (
-          <ActivityIndicator size="large" color="#007BFF" />
-        ) : (
+  const TabWaitConfirm = ({ lichHenList }) => {
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [cancelReason, setCancelReason] = useState("");
+
+    const openModal = (idlichhen) => {
+      setSelectedId(idlichhen);
+      setModalVisible(true);
+    };
+
+    const handleCancel = () => {
+      if (!cancelReason.trim()) {
+        Alert.alert("Lỗi", "Vui lòng nhập lý do hủy!");
+        return;
+      }
+      setModalVisible(false);
+      Huylich(selectedId, cancelReason);
+      setCancelReason("");
+    };
+
+    return (
+      <View style={styles.tabContainer}>
+        <SafeAreaView>
           <FlatList
             vertical
             data={lichHenList}
@@ -191,16 +251,66 @@ const ManageBookScreen = ({ navigation }) => {
                 <Text>Thời gian: {item.thoigianhen}</Text>
                 <Text>Ngày tạo: {item.ngaytao}</Text>
                 <Text>Trạng thái: {convertTrangThai(item.trangthai)}</Text>
-                <TouchableOpacity style={styles.btn}>
+                <TouchableOpacity
+                  style={styles.btn}
+                  onPress={() => openModal(item.idlichhen)}
+                >
                   <Text style={styles.textbtn}>Hủy lịch</Text>
                 </TouchableOpacity>
               </View>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={getLichHenchuaconfirm}
+              />
+            }
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: 16,
+                  color: "#555",
+                }}
+              >
+                Không có dữ liệu
+              </Text>
+            )}
           />
-        )}
-      </SafeAreaView>
-    </View>
-  );
+
+          {/* Modal nhập lý do hủy */}
+          <Modal
+            visible={isModalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Nhập lý do hủy</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Lý do hủy"
+                  value={cancelReason}
+                  onChangeText={setCancelReason}
+                />
+                <TouchableOpacity style={styles.btn} onPress={handleCancel}>
+                  <Text style={styles.textbtn}>Xác nhận</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.btn, { backgroundColor: "gray" }]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.textbtn}>Hủy bỏ</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </SafeAreaView>
+      </View>
+    );
+  };
 
   // Tab đang thực hiện
   const TabInProgress = ({ lichHenList1 }) => (
@@ -222,6 +332,24 @@ const ManageBookScreen = ({ navigation }) => {
                 <Text>Ngày tạo: {item.ngaytao}</Text>
                 <Text>Trạng thái: {convertTrangThai(item.trangthai)}</Text>
               </View>
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={getLichHendangthuchien}
+              />
+            }
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: 16,
+                  color: "#555",
+                }}
+              >
+                Không có dữ liệu
+              </Text>
             )}
           />
         )}
@@ -250,6 +378,24 @@ const ManageBookScreen = ({ navigation }) => {
                 <Text>Trạng thái: {convertTrangThai(item.trangthai)}</Text>
               </View>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={getLichHenhoanthanh}
+              />
+            }
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: 16,
+                  color: "#555",
+                }}
+              >
+                Không có dữ liệu
+              </Text>
+            )}
           />
         )}
       </SafeAreaView>
@@ -276,6 +422,24 @@ const ManageBookScreen = ({ navigation }) => {
                 <Text>Ngày tạo: {item.ngaytao}</Text>
                 <Text>Trạng thái: {convertTrangThai(item.trangthai)}</Text>
               </View>
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={getLichHendapay}
+              />
+            }
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: 16,
+                  color: "#555",
+                }}
+              >
+                Không có dữ liệu
+              </Text>
             )}
           />
         )}
@@ -304,16 +468,26 @@ const ManageBookScreen = ({ navigation }) => {
                 <Text>Trạng thái: {convertTrangThai(item.trangthai)}</Text>
               </View>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={getLichHendahuy}
+              />
+            }
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: 16,
+                  color: "#555",
+                }}
+              >
+                Không có dữ liệu
+              </Text>
+            )}
           />
         )}
-      </SafeAreaView>
-    </View>
-  );
-
-  const TabPlaceholder = ({ tittle }) => (
-    <View style={styles.tabContainer}>
-      <SafeAreaView>
-        <Text>tittle</Text>
       </SafeAreaView>
     </View>
   );
@@ -362,7 +536,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
   },
   tabItem: {
-    flexDirection: "column", // Icon và text xếp dọc
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -381,6 +555,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "#000000",
     backgroundColor: "#f0f8ff",
+    marginBottom: 10,
     borderWidth: 0.5,
     borderRadius: 10,
   },
@@ -397,6 +572,32 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    width: "100%",
+    marginBottom: 20,
   },
 });
 

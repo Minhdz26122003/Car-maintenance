@@ -3,7 +3,7 @@
   position: static;
   margin-left: 170px;
   max-width: 88%;
-  margin-top: -30px;
+  margin-top: -px;
 }
 .head-center th {
   background-color: rgb(236, 209, 210);
@@ -13,11 +13,22 @@
 .center-table {
   border-collapse: collapse;
 }
+
 .center-search-bar {
-  position: static;
-  max-width: 88%;
-  left: 170px;
-  top: -20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 170px;
+  background-color: aliceblue;
+  padding: 20px;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.name-search-bar {
+  flex: 1;
+}
+.address-search-bar {
 }
 .center-table th,
 .center-table td {

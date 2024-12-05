@@ -21,13 +21,13 @@ const Sidebar = () => {
   const location = useLocation();
 
   const items = [
-    { text: "Dashboard", icon: <DashboardIcon />, link: "/" },
-    { text: "Accounts", icon: <PersonIcon />, link: "/account" },
-    { text: "Services", icon: <RoomServiceIcon />, link: "/service" },
-    { text: "Centers", icon: <MapsHomeWorkIcon />, link: "/center" },
-    { text: "Sales", icon: <LoyaltyIcon />, link: "/sale" },
-    { text: "Booking", icon: <CalendarMonthIcon />, link: "/booking" },
-    { text: "Settings", icon: <SettingsIcon />, link: "/settings" },
+    { text: "Tổng quan", icon: <DashboardIcon />, link: "/" },
+    { text: "Tài khoản", icon: <PersonIcon />, link: "/account" },
+    { text: "Dịch vụ", icon: <RoomServiceIcon />, link: "/service" },
+    { text: "Trung tâm", icon: <MapsHomeWorkIcon />, link: "/center" },
+    { text: "Khuyến mãi", icon: <LoyaltyIcon />, link: "/sale" },
+    { text: "Lịch hẹn", icon: <CalendarMonthIcon />, link: "/booking" },
+    { text: "Cài đặt", icon: <SettingsIcon />, link: "/settings" },
   ];
   return (
     <Drawer classes={{ paper: "sidebar-container" }} variant="permanent">

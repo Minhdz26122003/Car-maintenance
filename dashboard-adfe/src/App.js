@@ -21,30 +21,44 @@ import "./App.css";
 function App() {
   const [user, setUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(
-    localStorage.getItem("username") || null
+    sessionStorage.getItem("username") || null
   );
 
-  // const handleLogin = (username, userData) => {
-  //   setLoggedInUser(username);
-  //   setUser(userData);
-  //   localStorage.setItem("username", username);
-  // };
-  const handleLogin = (userData) => {
-    setLoggedInUser(userData.username); // Lưu tên đăng nhập
-    setUser(userData); // Lưu thông tin người dùng
+  const handleLogin = (userData, rememberMe) => {
+    setLoggedInUser(userData.username);
+    setUser(userData);
 
-    // Lưu thông tin người dùng vào localStorage
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("username", userData.username); // Lưu tên đăng nhập nếu cần
+    // Nếu "Ghi nhớ đăng nhập",  lưu vào localStorage
+    if (rememberMe) {
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("username", userData.username);
+      localStorage.setItem("rememberMe", rememberMe);
+      sessionStorage.removeItem("user", JSON.stringify(userData));
+    } else {
+      // Nếu không, lưu vào sessionStorage
+      sessionStorage.setItem("user", JSON.stringify(userData));
+      sessionStorage.setItem("username", userData.username);
+      localStorage.setItem("rememberMe", rememberMe);
+      sessionStorage.removeItem("user", JSON.stringify(userData));
+    }
   };
 
+  const handleUpdateProfile = (updatedUser) => {
+    setUser(updatedUser);
+    sessionStorage.setItem("user", JSON.stringify(updatedUser));
+  };
   const handleLogout = () => {
     setLoggedInUser(null);
-    localStorage.removeItem("username");
-  };
-  const handleUpdateProfile = (updatedUser) => {
-    setUser(updatedUser); // Cập nhật thông tin người dùng
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Cập nhật localStorage
+    setUser(null);
+
+    // Xóa thông tin đăng nhập khỏi localStorage nếu không có "Ghi nhớ đăng nhập"
+    if (!JSON.parse(localStorage.getItem("rememberMe"))) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("username");
+      localStorage.removeItem("rememberMe");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("username");
+    }
   };
 
   const PrivateRoute = ({ element }) => {

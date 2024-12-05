@@ -10,6 +10,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,26 +24,73 @@ const ProfileScreen = ({ navigation }) => {
   const [sodienthoai, setSodienthoai] = useState("");
   const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setIduser(userData.iduser);
-        setUsername(userData.username);
-        setPassword(userData.password);
-        setDiachi(userData.diachi);
-        setSodienthoai(userData.sodienthoai);
-        setEmail(userData.email);
-      }
-    };
+  // Đọc dữ liệu người dùng khi màn hình được focus
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadUserData = async () => {
+        const userData = await getUserData();
+        if (userData) {
+          setIduser(userData.iduser);
+          // setPassword(userData.password);
+          // setDiachi(userData.diachi);
+          // setSodienthoai(userData.sodienthoai);
+          // setEmail(userData.email);
+          loadAccount(userData.iduser);
+        }
+      };
 
-    loadUserData();
-  }, []);
+      loadUserData(); // Gọi hàm loadUserData mỗi khi màn hình được focus
+    }, [])
+  );
+
+  const getUserData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("userData");
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error("Lỗi lấy thông tin người dùng:", error);
+      return null;
+    }
+  };
+
+  const loadAccount = async (iduser) => {
+    try {
+      const response = await fetch(
+        `${url}/myapi/Taikhoan/gettkbyid.php?iduser=${iduser}`
+      );
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.tk) && data.tk.length > 0) {
+        setUsername(data.tk[0].username); // Lấy username
+      } else {
+        console.log(
+          "Không tìm thấy tài khoản nào:",
+          data.message || "Lỗi không xác định"
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách tài khoản:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("userData");
+      navigation.navigate("LoginScreen", { replace: true });
+    } catch (error) {
+      console.error("Đăng xuất không thành công:", error);
+    }
+  };
+
+  const handleNavigate = (screen) => {
+    navigation.navigate(screen);
+  };
+
   const data = [
     {
       key: "QLX",
       title: "Quản lý xe",
-      description: "Quản lý những chiếc xe",
+      description: "Quản lý thông tin những chiếc xe",
       icon: "car-sport-outline",
       onPress: () => handleNavigate("ManageCarScreen"),
     },
@@ -54,35 +102,19 @@ const ProfileScreen = ({ navigation }) => {
       onPress: () => handleNavigate("ManageBookScreen"),
     },
     {
+      key: "DMK",
+      title: "Đổi mật khẩu",
+      description: "Đổi mật khẩu cho tài khoản của bạn",
+      icon: "bookmark-outline",
+      onPress: () => handleNavigate("ChangePasswordScreen"),
+    },
+    {
       key: "DX",
       title: "Đăng xuất",
       icon: "log-out-outline",
       onPress: () => handleLogout(),
     },
   ];
-  const getUserData = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("userData");
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (error) {
-      console.error("Lỗi lấy thông tin người dùng:", error);
-      return null;
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userData");
-      Alert.alert("Thông báo", "Bạn đã đăng xuất thành công!");
-      navigation.replace("LoginScreen");
-    } catch (error) {
-      console.error("Đăng xuất không thành công:", error);
-    }
-  };
-
-  const handleNavigate = (screen) => {
-    navigation.navigate(screen);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -98,9 +130,8 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.viewProfile}>Xem trang cá nhân</Text>
           </TouchableOpacity>
         </View>
-
-        {/* <Text>App Version: {version}</Text>; */}
       </View>
+
       {/* Các mục quản lý */}
       <FlatList
         data={data}

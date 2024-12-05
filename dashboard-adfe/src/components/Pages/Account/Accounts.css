@@ -11,9 +11,13 @@
   font-size: 16px;
 }
 .account-search-bar {
-  position: static;
+  background-color: aliceblue;
+}
+.account-search-container {
   max-width: 88%;
+  margin-bottom: 10px;
   left: 170px;
+  position: relative;
   top: -20px;
 }
 .account-table {

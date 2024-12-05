@@ -16,6 +16,7 @@ import {
   Button,
   Fab,
   Box,
+  Typography,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -31,7 +32,11 @@ const Centers = () => {
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa dich vu
   const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm dich vu
-  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState({ tentrungtam: "", diachi: "" });
+
+  const handleSearch = (key, value) => {
+    setSearchTerm((prev) => ({ ...prev, [key]: value }));
+  };
 
   useEffect(() => {
     fetchCenters();
@@ -47,10 +52,11 @@ const Centers = () => {
   };
 
   //TÌM KIẾM TRUNG TÂM
-  const searchCenters = async (tentrungtam) => {
+  const searchCenters = async (searchParams) => {
     try {
+      const query = new URLSearchParams(searchParams).toString();
       const response = await axios.get(
-        `${url}myapi/Trungtam/tktrungtam.php?tentrungtam=${tentrungtam}`
+        `${url}myapi/Trungtam/tktrungtam.php?${query}`
       );
       const centers = response.data.centers;
       console.log("API Response:", centers);
@@ -59,22 +65,17 @@ const Centers = () => {
       console.error("Error searching centers:", error);
     }
   };
+
   // Gọi API để lấy tất cả khi component được load lần đầu
   useEffect(() => {
-    if (searchTerm) {
-      console.log("Searching for:", searchTerm);
+    const { tentrungtam, diachi } = searchTerm;
+    if (tentrungtam || diachi) {
+      // console.log("Searching with:", searchTerm);
       searchCenters(searchTerm);
     } else {
-      console.log("Fetching all center");
       fetchCenters();
     }
   }, [searchTerm]);
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-    // console.log("Search Term:", event.target.value);
-  };
-  ////
 
   // THÊM TRUNG TÂM
   const handleAddSubmit = async (newCenter) => {
@@ -170,16 +171,27 @@ const Centers = () => {
   return (
     <div>
       {/* Thanh tìm kiếm */}
-      <TextField
-        className="center-search-bar"
-        label="Tìm kiếm trung tâm"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={handleSearch}
-        placeholder="Tìm kiếm theo tên trung tâm"
-      />
+
+      <div className="center-search-bar">
+        <TextField
+          className="name-search-bar"
+          label="Tìm kiếm theo tên trung tâm"
+          variant="outlined"
+          value={searchTerm.tentrungtam}
+          onChange={(e) => handleSearch("tentrungtam", e.target.value)}
+          placeholder="Nhập tên trung tâm"
+        />
+
+        {/* Ô tìm kiếm theo địa chỉ */}
+        <TextField
+          className="address-search-bar"
+          label="Tìm kiếm theo địa chỉ"
+          variant="outlined"
+          value={searchTerm.diachi}
+          onChange={(e) => handleSearch("diachi", e.target.value)}
+          placeholder="Nhập địa chỉ"
+        />
+      </div>
 
       <TableContainer component={Paper} className="center-table-container">
         <Table aria-label="center table" className="center-table">

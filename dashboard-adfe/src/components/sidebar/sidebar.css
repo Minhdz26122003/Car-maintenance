@@ -1,59 +1,76 @@
 /* Sidebar container */
 .sidebar-container {
-  margin: 5px 0px 500px 20px;
+  margin: 5px 0px 500px 10px;
   width: 250px;
-  border-radius: 15px; /* Bo viền */
-  overflow: hidden; /* Không cho phép các phần tử tràn ra ngoài */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+  border-radius: 15px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 .siderbar {
-  color: var(--black);
   height: 100vh;
+
   background: linear-gradient(
     106.37deg,
-    #d3dff1 29.63%,
-    #ebb6b6 51.55%,
-    #cbf5c5 90.85%
+    #ffeae0 29.63%,
+    #ffe5e5 51.55%,
+    #e3ffde 90.85%
   );
 }
+
 /* Mục Sidebar */
 .sidebar-item {
+  display: flex;
+
+  align-items: center;
+  padding: 10px 20px;
   background-color: inherit;
   color: inherit;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  transform: translateX(10px);
+  color: #000000;
 }
 
 /* Mục Sidebar active */
 .sidebar-item.active {
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   color: #1976d2;
+  font-weight: bold;
+  transform: translateX(10px);
+  box-shadow: inset 5px 0 0 #1976d2;
 }
 
 /* Icon */
 .sidebar-icon {
+  margin-right: 10px;
   color: inherit;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 /* Icon active */
 .sidebar-icon.active {
   color: #1976d2;
+
+  transform: scale(1.2) rotate(180deg); /* xoay khi active */
 }
 
-.sidebar-item {
-  background-color: inherit;
-  color: inherit;
+.sidebar-icon:hover {
+  transform: rotate(360deg);
 }
 
-.sidebar-item.active {
-  background-color: #f0f0f0;
-  color: #000000;
-  font-weight: bold;
+/* Text */
+.sidebar-item .MuiListItemText-root {
+  transition: opacity 0.3s ease;
 }
 
-.sidebar-icon {
-  color: inherit;
-}
-
-.sidebar-icon.active {
-  color: #000000;
+.sidebar-item:hover .MuiListItemText-root {
+  opacity: 1;
 }

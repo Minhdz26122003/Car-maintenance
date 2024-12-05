@@ -7,14 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ToastAndroid,
   Alert,
 } from "react-native";
+
 import { Picker } from "@react-native-picker/picker";
+import { useFocusEffect } from "@react-navigation/native";
 import { CheckBox } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import Toast from "react-native-toast-message";
 
 const BookingScreen = ({ navigation }) => {
   const [iduser, setIduser] = useState("");
@@ -37,29 +40,50 @@ const BookingScreen = ({ navigation }) => {
   const [selectedCar, setSelectedCar] = useState("");
   const [isNewCar, setIsNewCar] = useState(false);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setUsername(userData.username);
-        setPhoneNumber(userData.sodienthoai);
-        setIduser(userData.iduser);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+      if (selectedCenter) {
+        fetchServicesByCenter(selectedCenter);
+      } else {
+        setServices([]);
       }
-    };
-    const loadData = async () => {
-      await loadUserData();
-      await loadCenters();
-      await loadCars();
-    };
-
-    loadData();
-    if (selectedCenter) {
-      fetchServicesByCenter(selectedCenter);
-    } else {
-      setServices([]);
+    }, [selectedCenter, iduser])
+  );
+  const loadUserData = async () => {
+    const userData = await getUserData();
+    if (userData) {
+      setIduser(userData.iduser);
+      loadAccount(userData.iduser);
     }
-  }, [selectedCenter]);
+  };
+  const loadData = async () => {
+    await loadUserData();
+    await loadCenters();
+    await loadCars();
+  };
 
+  const loadAccount = async (iduser) => {
+    try {
+      const response = await fetch(
+        `${url}/myapi/Taikhoan/gettkbyid.php?iduser=${iduser}`
+      );
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.tk) && data.tk.length > 0) {
+        // Lấy username từ phần tử đầu tiên
+        setUsername(data.tk[0].username);
+        setPhoneNumber(data.tk[0].sodienthoai);
+      } else {
+        console.log(
+          "Không tìm thấy tài khoản nào:",
+          data.message || "Lỗi không xác định"
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách tài khoản:", error);
+    }
+  };
   // Lấy thông tin user từ store
   const getUserData = async () => {
     try {
@@ -83,18 +107,23 @@ const BookingScreen = ({ navigation }) => {
       console.error("Error loading centers: ", error);
     }
   };
-
   const loadCars = async () => {
     try {
-      const response = await fetch(`${url}/myapi/Xe/getallxe.php`);
+      const response = await fetch(
+        `${url}/myapi/Xe/getxe.php?iduser=${iduser}`
+      );
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setCars(data);
+
+      if (data.success && Array.isArray(data.xe)) {
+        setCars(data.xe);
+      } else {
+        console.log("Không tìm thấy xe nào:", data.message);
       }
     } catch (error) {
       console.error("Lỗi lấy danh sách xe:", error);
     }
   };
+
   // load dịch vụ theo center
   const fetchServicesByCenter = async (selectedCenter) => {
     try {
@@ -183,6 +212,7 @@ const BookingScreen = ({ navigation }) => {
       setIsNewCar(true);
     } else {
       setIsNewCar(false);
+
       const selected = cars.find((car) => car.idxe === value);
       setBiensoxe(selected.idxe);
       setCarBrand(selected.hangxe);
@@ -211,19 +241,14 @@ const BookingScreen = ({ navigation }) => {
           namsx: namsx,
         }),
       });
-
-      const contentType = response.headers.get("content-type");
-      console.log("Content Type:", contentType);
-
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        console.error("Phản hồi không phải JSON:", text);
-        throw new Error("Server không trả về JSON hợp lệ.");
-      }
-
       const data = await response.json();
       if (data.success) {
-        console.log("Thêm xe thành công");
+        loadCars();
+        // isNewCar = false;
+        // Xóa dữ liệu input
+        setBiensoxe("");
+        setCarBrand("");
+        setYearcar("");
       } else {
         console.error("Lỗi:", data.message);
       }
@@ -253,6 +278,15 @@ const BookingScreen = ({ navigation }) => {
     setIsNewCar(false);
   };
 
+  const showToast = () => {
+    Toast.show({
+      type: "success", // success | error | info
+      text1: "Thông báo",
+      text2: "Đăng ký thành công! 🎉",
+
+      position: "bottom",
+    });
+  };
   // Xác nhận đặt lịch
   const confirmBooking = async () => {
     try {
@@ -274,16 +308,32 @@ const BookingScreen = ({ navigation }) => {
       });
 
       const result = await response.json();
+      console.log("lichhen", result);
+
       if (result.success) {
         clearForm();
-        Alert.alert("Thành công", result.message);
-        navigation.navigate("PaymentScreen");
+        // Alert.alert("Thành công", result.message);
+        showToast();
+
+        navigation.navigate(
+          "ManageBookScreen"
+          // idlichhen: result.data?.idlichhen,
+          // username: username,
+          // sodienthoai: sodienthoai,
+          // idxe: selectedCar === "new" ? idxe : selectedCar,
+          // selectedCenter: getCenterNames(selectedCenter),
+          // selectedServices: getServiceNames(selectedServices).join(", "),
+          // ngayhen: date.toLocaleDateString(),
+          // thoigianhen: `${selectedTime.getHours()}:${selectedTime.getMinutes()}`,
+          // tongtien: calculateTotalPrice(),
+        );
       } else {
+        console.error("Lỗi", result.message);
         Alert.alert("Lỗi", result.message);
       }
     } catch (error) {
       console.error("Error confirming booking:", error);
-      Alert.alert("Lỗi", "Có lỗi xảy ra khi đặt lịch.");
+      Alert.alert("Lỗi", "Không thể kết nối tới máy chủ.");
     }
   };
 
@@ -310,7 +360,6 @@ const BookingScreen = ({ navigation }) => {
             <Picker.Item label="Thêm xe mới" value="new" />
           </Picker>
         </View>
-        {/* ComboBox để chọn xe */}
 
         {/* Form để nhập thông tin nếu là xe mới */}
         {isNewCar && (
@@ -396,8 +445,8 @@ const BookingScreen = ({ navigation }) => {
                 />
 
                 <Text
-                  style={styles.checkboxLabel}
-                  numberOfLines={1}
+                  style={styles.checkboxLabeltext}
+                  numberOfLines={3}
                   ellipsizeMode="tail"
                 >
                   {service.tendichvu}
@@ -501,7 +550,13 @@ const BookingScreen = ({ navigation }) => {
           </View>
           <View style={styles.groupsumary}>
             <Text>Dịch vụ: </Text>
-            <Text> {getServiceNames(selectedServices).join(", ")}</Text>
+            <Text
+              style={{ flex: 1, textAlign: "right" }}
+              numberOfLines={10}
+              ellipsizeMode="tail"
+            >
+              {getServiceNames(selectedServices).join(", ")}
+            </Text>
           </View>
 
           <View style={styles.groupsumary}>
@@ -548,6 +603,7 @@ const BookingScreen = ({ navigation }) => {
             Xác nhận đặt lịch
           </Text>
         </TouchableOpacity>
+        <Toast />
       </View>
     </ScrollView>
   );
@@ -599,7 +655,6 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 20,
-    padding: 10,
   },
   inputHours: {
     marginBottom: 20,
@@ -643,8 +698,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f8ff",
   },
   checkboxLabel: {
-    marginLeft: 10,
-    width: 100,
+    marginLeft: 50,
+  },
+  checkboxLabeltext: {
+    marginRight: 10,
+    width: 150,
   },
   datePicker: {
     width: "100%",

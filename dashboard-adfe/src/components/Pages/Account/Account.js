@@ -166,17 +166,18 @@ const Account = () => {
   return (
     <div>
       {/* Thanh tìm kiếm */}
-      <TextField
-        className="account-search-bar"
-        label="Tìm kiếm tài khoản"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={handleSearch}
-        placeholder="Tìm kiếm theo tên tài khoản"
-      />
-
+      <div className="account-search-container">
+        <TextField
+          className="account-search-bar"
+          label="Tìm kiếm tài khoản"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Tìm kiếm theo tên tài khoản"
+        />
+      </div>
       <TableContainer component={Paper} className="account-table-container">
         <Table aria-label="account table" className="account-table">
           {/* Tiêu đề bảng */}
@@ -213,7 +214,7 @@ const Account = () => {
                     </IconButton>
                     <IconButton
                       color="error"
-                      onClick={() => handleDelete(account.iduser)}
+                      // onClick={() => handleDelete(account.iduser)}
                     >
                       <DeleteIcon />
                     </IconButton>
