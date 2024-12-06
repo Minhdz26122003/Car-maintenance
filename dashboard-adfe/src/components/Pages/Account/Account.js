@@ -212,12 +212,12 @@ const Account = () => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton
+                    {/* <IconButton
                       color="error"
                       // onClick={() => handleDelete(account.iduser)}
                     >
                       <DeleteIcon />
-                    </IconButton>
+                    </IconButton> */}
                   </TableCell>
                 </TableRow>
               ))

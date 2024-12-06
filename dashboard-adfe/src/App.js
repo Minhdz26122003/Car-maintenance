@@ -5,6 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import { useEffect } from "react";
 import Sidebar from "./components/sidebar/sidebar";
 import TopBar from "./components/topbar/topbar";
 import Dashboard from "./components/Pages/Dashboard/Dashboard";
@@ -13,8 +14,9 @@ import Service from "./components/Pages/Services/service";
 import Center from "./components/Pages/Centers/centers";
 import Sale from "./components/Pages/Sales/Sales";
 import Booking from "./components/Pages/Booking/Booking";
-import Login from "./components/Pages/Login/Login"; // Import the login page
-import Profile from "./components/Pages/Profile/profile"; // Import the login page
+import Profile from "./components/Pages/Profile/profile";
+import Login from "./components/Pages/Login/Login";
+import Changepass from "./components/Pages/Profile/changepass";
 import { Box } from "@mui/material";
 import "./App.css";
 
@@ -24,6 +26,13 @@ function App() {
     sessionStorage.getItem("username") || null
   );
 
+  useEffect(() => {
+    const storedUser =
+      sessionStorage.getItem("user") || localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   const handleLogin = (userData, rememberMe) => {
     setLoggedInUser(userData.username);
     setUser(userData);
@@ -33,20 +42,15 @@ function App() {
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("username", userData.username);
       localStorage.setItem("rememberMe", rememberMe);
-      sessionStorage.removeItem("user", JSON.stringify(userData));
+      sessionStorage.setItem("user", JSON.stringify(userData));
     } else {
       // Nếu không, lưu vào sessionStorage
       sessionStorage.setItem("user", JSON.stringify(userData));
-      sessionStorage.setItem("username", userData.username);
+
       localStorage.setItem("rememberMe", rememberMe);
-      sessionStorage.removeItem("user", JSON.stringify(userData));
     }
   };
 
-  const handleUpdateProfile = (updatedUser) => {
-    setUser(updatedUser);
-    sessionStorage.setItem("user", JSON.stringify(updatedUser));
-  };
   const handleLogout = () => {
     setLoggedInUser(null);
     setUser(null);
@@ -56,6 +60,9 @@ function App() {
       localStorage.removeItem("user");
       localStorage.removeItem("username");
       localStorage.removeItem("rememberMe");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("username");
+    } else {
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("username");
     }
@@ -101,8 +108,12 @@ function App() {
                 element={<PrivateRoute element={<Booking />} />}
               />
               <Route
+                path="/changepass"
+                element={<PrivateRoute element={<Changepass />} />}
+              />
+              <Route
                 path="/profile"
-                element={<Profile user={user} onUpdate={handleUpdateProfile} />}
+                element={<PrivateRoute element={<Profile user={user} />} />}
               />{" "}
             </Routes>
           </Box>

@@ -224,6 +224,12 @@ const Service = () => {
           min={0}
           max={10000000}
           step={100000}
+          valueLabelFormat={(value) =>
+            new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(value)
+          }
         />
       </Box>
 
