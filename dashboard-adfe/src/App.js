@@ -16,12 +16,12 @@ import Sale from "./components/Pages/Sales/Sales";
 import Booking from "./components/Pages/Booking/Booking";
 import Profile from "./components/Pages/Profile/profile";
 import Login from "./components/Pages/Login/Login";
-import Changepass from "./components/Pages/Profile/changepass";
 import { Box } from "@mui/material";
 import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [title, setTitle] = useState("HỆ THỐNG QUẢN TRỊ APP");
   const [loggedInUser, setLoggedInUser] = useState(
     sessionStorage.getItem("username") || null
   );
@@ -33,6 +33,9 @@ function App() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+  const handleMenuClick = (menuName) => {
+    setTitle(menuName); // Cập nhật tiêu đề khi chọn menu
+  };
   const handleLogin = (userData, rememberMe) => {
     setLoggedInUser(userData.username);
     setUser(userData);
@@ -76,10 +79,18 @@ function App() {
     <div className="App">
       <div className="AppGlass">
         <Router>
-          {loggedInUser && <Sidebar className="side" />}
+          {loggedInUser && (
+            <Sidebar
+              onMenuClick={handleMenuClick} // Truyền hàm vào Sidebar
+            />
+          )}
           <Box sx={{ flexGrow: 1, padding: "20px" }}>
             {loggedInUser && (
-              <TopBar username={loggedInUser} onLogout={handleLogout} />
+              <TopBar
+                username={loggedInUser}
+                onLogout={handleLogout}
+                title={title} // Truyền tiêu đề vào TopBar
+              />
             )}
             <Routes>
               <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -106,10 +117,6 @@ function App() {
               <Route
                 path="/booking"
                 element={<PrivateRoute element={<Booking />} />}
-              />
-              <Route
-                path="/changepass"
-                element={<PrivateRoute element={<Changepass />} />}
               />
               <Route
                 path="/profile"

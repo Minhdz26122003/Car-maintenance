@@ -36,11 +36,11 @@ const Account = () => {
     password: "",
     sodienthoai: "",
     diachi: "",
-    vaitro: 0, // Giá trị mặc định cho vaitro
+    vaitro: 0,
   });
-  const [openEdit, setOpenEdit] = useState(false); // Quản lý form sửa tài khoản
-  const [openAdd, setOpenAdd] = useState(false); // Quản lý form thêm tài khoản
-  const [searchTerm, setSearchTerm] = useState(""); // Trạng thái từ khóa tìm kiếm
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchAccounts();
@@ -54,9 +54,26 @@ const Account = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await axios.get(`${url}myapi/Taikhoan/getTK.php`);
-      const accounts = response.data; // Giữ vaitro là số
-      setAccounts(accounts);
+      const user = JSON.parse(localStorage.getItem("user"));
+      const iduser = user?.id || null;
+
+      if (!iduser) {
+        console.error("Không tìm thấy iduser trong localStorage.");
+        return;
+      }
+      const response = await axios.get(`${url}myapi/Taikhoan/getTK.php`, {
+        params: {
+          iduser: iduser,
+        },
+      });
+
+      const data = response.data;
+      if (Array.isArray(data)) {
+        setAccounts(data);
+      } else {
+        console.error("Dữ liệu trả về không phải là mảng:", data);
+        setAccounts([]);
+      }
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
@@ -64,13 +81,19 @@ const Account = () => {
 
   //TÌM KIẾM TÀI KHOẢN
   const searchAccounts = async (username) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const iduser = user?.id || null;
     try {
-      const response = await axios.get(
-        `${url}myapi/Taikhoan/tktaikhoan.php?username=${username}`
-      );
+      const response = await axios.get(`${url}myapi/Taikhoan/tktaikhoan.php`, {
+        params: {
+          iduser: iduser,
+          username: username,
+        },
+      });
+
       const accounts = response.data.accounts;
-      console.log("API Response:", accounts); // Đảm bảo dữ liệu trả về là mảng
-      setAccounts(accounts); // Cập nhật danh sách tài khoản tìm kiếm
+      console.log("API Response:", accounts);
+      setAccounts(accounts);
     } catch (error) {
       console.error("Error searching accounts:", error);
     }
@@ -79,7 +102,7 @@ const Account = () => {
   useEffect(() => {
     if (searchTerm) {
       console.log("Searching for:", searchTerm);
-      searchAccounts(searchTerm); // Gọi tìm kiếm khi có từ khóa
+      searchAccounts(searchTerm);
     } else {
       console.log("Fetching all accounts");
       fetchAccounts();
@@ -89,16 +112,12 @@ const Account = () => {
   // Cập nhật từ khóa tìm kiếm
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    // console.log("Search Term:", event.target.value);
   };
 
   //  THÊM TÀI KHOẢN
   const handleAddSubmit = async (newAccount) => {
     try {
-      // Gửi yêu cầu thêm tài khoản mới
       await axios.post(`${url}myapi/Taikhoan/themtaikhoan.php`, newAccount);
-
-      // Sau khi thêm tài khoản thành công, đóng form và tải lại danh sách tài khoản
       setOpenAdd(false);
       fetchAccounts();
     } catch (error) {

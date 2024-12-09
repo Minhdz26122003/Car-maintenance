@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import "./sidebar.css";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
+
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import PersonIcon from "@mui/icons-material/Person";
@@ -17,7 +17,7 @@ import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ onMenuClick }) => {
   const location = useLocation();
 
   const items = [
@@ -27,7 +27,6 @@ const Sidebar = () => {
     { text: "Trung tâm", icon: <MapsHomeWorkIcon />, link: "/center" },
     { text: "Khuyến mãi", icon: <LoyaltyIcon />, link: "/sale" },
     { text: "Lịch hẹn", icon: <CalendarMonthIcon />, link: "/booking" },
-    { text: "Cài đặt", icon: <SettingsIcon />, link: "/settings" },
   ];
   return (
     <Drawer classes={{ paper: "sidebar-container" }} variant="permanent">
@@ -41,6 +40,7 @@ const Sidebar = () => {
             className={`sidebar-item ${
               location.pathname === item.link ? "active" : ""
             }`}
+            onClick={() => onMenuClick(item.text)} // Gọi hàm khi nhấn vào menu
           >
             <ListItemIcon
               className={`sidebar-icon ${

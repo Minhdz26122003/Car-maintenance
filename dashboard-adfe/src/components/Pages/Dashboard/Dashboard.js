@@ -21,6 +21,7 @@ import {
   ComposedChart,
   Area,
   Line,
+  ResponsiveContainer,
 } from "recharts";
 
 import axios from "axios";
@@ -212,31 +213,33 @@ const Dashboard = () => {
           <Typography variant="h6" component="div" className="chart-title">
             Biểu đồ tổng hợp lịch hẹn
           </Typography>
-          <ComposedChart width={1000} height={350} data={datamonth}>
-            <XAxis
-              dataKey="appointment_date"
-              tickFormatter={(date) => {
-                const [year, month, day] = date.split("-");
-                return `${day}-${month}-${year}`;
-              }}
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#f5f5f5" />
-            {/* <Area
+          <ResponsiveContainer width="100%" height="90%">
+            <ComposedChart data={datamonth}>
+              <XAxis
+                dataKey="appointment_date"
+                tickFormatter={(date) => {
+                  const [year, month, day] = date.split("-");
+                  return `${day}-${month}-${year}`;
+                }}
+              />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <CartesianGrid stroke="#f5f5f5" />
+              {/* <Area
               type="monotone"
               dataKey="total_daily_appointments"
               fill="#32f075"
               stroke="#32f075"
             /> */}
-            <Bar dataKey="total_user" barSize={20} fill="#413ea0" />
-            <Line
-              type="total_appoinments"
-              dataKey="total_appoinments"
-              stroke="#ff7300"
-            />
-          </ComposedChart>
+              <Bar dataKey="total_user" barSize={20} fill="#413ea0" />
+              <Line
+                type="total_appoinments"
+                dataKey="total_appoinments"
+                stroke="#ff7300"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Biểu đồ AreaChart */}
@@ -244,34 +247,34 @@ const Dashboard = () => {
           <Typography variant="h6" component="div" className="chart-title">
             Biểu đồ người dùng đặt lịch trong ngày
           </Typography>
-          <AreaChart
-            width={1000}
-            height={350}
-            data={datamonth}
-            margin={{
-              top: 10,
-              right: 30,
-              left: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="appointment_date"
-              tickFormatter={(date) => {
-                const [year, month, day] = date.split("-");
-                return `${day}-${month}-${year}`;
+          <ResponsiveContainer width="100%" height="90%">
+            <AreaChart
+              data={datamonth}
+              margin={{
+                top: 10,
+                right: 30,
+                left: 0,
+                bottom: 0,
               }}
-            />
-            <YAxis />
-            <Tooltip />
-            <Area
-              type="monotoneX"
-              dataKey="total_user"
-              stroke="#323bf0"
-              fill="#ff7300"
-            />
-          </AreaChart>
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="appointment_date"
+                tickFormatter={(date) => {
+                  const [year, month, day] = date.split("-");
+                  return `${day}-${month}-${year}`;
+                }}
+              />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="total_user"
+                stroke="#323bf0"
+                fill="#ff7300"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Biểu đồ BarChart */}
@@ -279,14 +282,16 @@ const Dashboard = () => {
           <Typography variant="h6" component="div" className="chart-title">
             Biểu đồ tổng lịch hẹn theo tháng
           </Typography>
-          <BarChart width={1000} height={350} data={datayear}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="appointment_month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="total_appoinments_month" fill="#f03232" />
-          </BarChart>
+          <ResponsiveContainer width="100%" height="90%">
+            <BarChart data={datayear}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="appointment_month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="total_appoinments_month" fill="#f03232" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>

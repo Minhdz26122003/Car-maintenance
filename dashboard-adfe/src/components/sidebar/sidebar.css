@@ -1,6 +1,6 @@
 /* Sidebar container */
 .sidebar-container {
-  margin: 5px 0px 500px 10px;
+  margin: 5px 0px 50px 10px;
   width: 250px;
   border-radius: 15px;
   overflow: hidden;
@@ -36,7 +36,7 @@
 .sidebar-item:hover {
   background-color: rgba(255, 255, 255, 0.6);
   transform: translateX(10px);
-  color: #000000;
+  color: #f00000;
 }
 
 /* Mục Sidebar active */

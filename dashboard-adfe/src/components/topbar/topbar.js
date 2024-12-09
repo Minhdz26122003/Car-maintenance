@@ -10,12 +10,10 @@ import {
 } from "@mui/material";
 
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Link } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 
-const TopBar = ({ username, onLogout }) => {
+const TopBar = ({ username, onLogout, title }) => {
   const navigate = useNavigate();
   const profile = () => {
     navigate("/profile");
@@ -28,7 +26,7 @@ const TopBar = ({ username, onLogout }) => {
         color: "#333",
         boxShadow: 1,
         borderRadius: 5,
-        width: "82%",
+        width: "calc(100% - 280px)",
         margin: "10px auto",
       }}
     >
@@ -37,7 +35,7 @@ const TopBar = ({ username, onLogout }) => {
           variant="h6"
           sx={{ flexGrow: 1, fontWeight: "bold", color: "#333" }}
         >
-          HỆ THỐNG QUẢN TRỊ APP
+          {title}
         </Typography>
 
         {/* Icon thông báo */}
@@ -46,7 +44,7 @@ const TopBar = ({ username, onLogout }) => {
         </IconButton>
 
         {/* Hiển thị tên và avatar */}
-        <IconButton
+        <Button
           onClick={profile}
           sx={{ display: "flex", alignItems: "center", marginLeft: 2 }}
         >
@@ -54,7 +52,7 @@ const TopBar = ({ username, onLogout }) => {
             {username}
           </Typography>
           <Avatar alt={username} sx={{ width: 36, height: 36 }} />
-        </IconButton>
+        </Button>
 
         {/* Nút đăng xuất */}
         <IconButton color="inherit" onClick={onLogout}>

@@ -204,8 +204,8 @@ const Centers = () => {
               <TableCell>Số điện thoại</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Hình ảnh</TableCell>
-              <TableCell>Tọa độ X</TableCell>
-              <TableCell>Tọa độ Y</TableCell>
+              {/* <TableCell>Tọa độ X</TableCell>
+              <TableCell>Tọa độ Y</TableCell> */}
 
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -227,8 +227,8 @@ const Centers = () => {
                       style={{ width: "100px", height: "auto" }} // Kiểm soát kích thước hình ảnh
                     />
                   </TableCell>
-                  <TableCell>{center.toadox}</TableCell>
-                  <TableCell>{center.toadoy}</TableCell>
+                  {/* <TableCell>{center.toadox}</TableCell>
+                  <TableCell>{center.toadoy}</TableCell> */}
 
                   <TableCell className="center-table-actions">
                     <IconButton
