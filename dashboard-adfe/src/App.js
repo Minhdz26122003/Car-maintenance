@@ -16,6 +16,7 @@ import Sale from "./components/Pages/Sales/Sales";
 import Booking from "./components/Pages/Booking/Booking";
 import Profile from "./components/Pages/Profile/profile";
 import Login from "./components/Pages/Login/Login";
+import Sercen from "./components/Pages/Ser-Cen/ServiceCen";
 import { Box } from "@mui/material";
 import "./App.css";
 
@@ -89,7 +90,7 @@ function App() {
               <TopBar
                 username={loggedInUser}
                 onLogout={handleLogout}
-                title={title} // Truyền tiêu đề vào TopBar
+                title={title}
               />
             )}
             <Routes>
@@ -109,6 +110,10 @@ function App() {
               <Route
                 path="/center"
                 element={<PrivateRoute element={<Center />} />}
+              />
+              <Route
+                path="/sercen"
+                element={<PrivateRoute element={<Sercen />} />}
               />
               <Route
                 path="/sale"

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "BookingApp",
+    "slug": "BookingApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+
+    "userInterfaceStyle": "light",
+
+    "splash": {
+      "image": "./asset/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./asset/car1.jpg",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.nguyenngocminh.BookingApp"
+    },
+    "web": {
+      "favicon": "./asset/icon.png"
+    },
+    "scheme": "BookingApp"
+  }
+}

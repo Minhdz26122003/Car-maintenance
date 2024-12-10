@@ -245,7 +245,7 @@ const Service = () => {
               <TableCell>Hình ảnh</TableCell>
               <TableCell>Thời gian thực hiện</TableCell>
 
-              <TableCell>Actions</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
 

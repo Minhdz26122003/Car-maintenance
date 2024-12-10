@@ -1,0 +1,49 @@
+/* Định dạng bảng */
+.serviceCen-table-container {
+  position: static;
+  margin-left: 170px;
+  max-width: 87%;
+  margin-top: -10px;
+}
+.head-serviceCen th {
+  background-color: rgb(236, 209, 210);
+  font-weight: bold;
+  font-size: 16px;
+}
+.serviceCen-table {
+  border-collapse: collapse;
+}
+.serviceCen-search-bar {
+  position: static;
+  max-width: 88%;
+  background-color: aliceblue;
+  left: 170px;
+  top: -20px;
+}
+.serviceCen-table th,
+.serviceCen-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.serviceCen-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.select-center-label {
+  width: 100%;
+}

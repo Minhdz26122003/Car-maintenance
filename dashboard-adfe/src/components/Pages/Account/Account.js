@@ -203,13 +203,13 @@ const Account = () => {
           <TableHead className="head-account">
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Username</TableCell>
+              <TableCell>Tên tài khoản</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Password</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Mật khẩu</TableCell>
+              <TableCell>Số điện thoại</TableCell>
+              <TableCell>Địa chỉ</TableCell>
+              <TableCell>Vai trò </TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
 
@@ -258,7 +258,7 @@ const Account = () => {
           {selectedAccount && (
             <>
               <TextField
-                label="Username"
+                label="Tên tài khoản"
                 fullWidth
                 margin="normal"
                 value={selectedAccount.username || ""}
@@ -282,7 +282,7 @@ const Account = () => {
                 }
               />
               <TextField
-                label="Password"
+                label="Mật khẩu"
                 fullWidth
                 margin="normal"
                 value={selectedAccount.password || ""}
@@ -294,7 +294,7 @@ const Account = () => {
                 }
               />
               <TextField
-                label="Phone"
+                label="Số điện thoại"
                 fullWidth
                 margin="normal"
                 value={selectedAccount.sodienthoai || ""}
@@ -306,7 +306,7 @@ const Account = () => {
                 }
               />
               <TextField
-                label="Address"
+                label="Địa chỉ"
                 fullWidth
                 margin="normal"
                 value={selectedAccount.diachi || ""}
@@ -319,7 +319,7 @@ const Account = () => {
               />
 
               <Select
-                label="Role"
+                label="Vai trò"
                 fullWidth
                 margin="normal"
                 value={selectedAccount.vaitro} // Giá trị hiện tại của vai trò
@@ -352,7 +352,7 @@ const Account = () => {
         <DialogTitle>Add Account</DialogTitle>
         <DialogContent>
           <TextField
-            label="Username"
+            label="Tên tài khoản"
             fullWidth
             margin="normal"
             onChange={(e) =>
@@ -374,7 +374,7 @@ const Account = () => {
             }
           />
           <TextField
-            label="Password"
+            label="Mật khẩu"
             fullWidth
             margin="normal"
             onChange={(e) =>
@@ -385,7 +385,7 @@ const Account = () => {
             }
           />
           <TextField
-            label="Phone"
+            label="Số điện thoại"
             fullWidth
             margin="normal"
             onChange={(e) =>
@@ -396,7 +396,7 @@ const Account = () => {
             }
           />
           <TextField
-            label="Address"
+            label="Địa chỉ"
             fullWidth
             margin="normal"
             onChange={(e) =>
@@ -408,7 +408,7 @@ const Account = () => {
           />
 
           <Select
-            label="Role"
+            label="Vai trò"
             fullWidth
             margin="normal"
             value={selectedAccount.vaitro} // Giá trị hiện tại của vai trò

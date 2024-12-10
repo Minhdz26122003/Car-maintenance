@@ -98,13 +98,10 @@ const Booking = () => {
         `${url}myapi/Lichhen/tkLichhen.php?start_date=${startDate}&end_date=${endDate}`
       );
 
-      // Cập nhật lịch hẹn
       if (response.data.success) {
         setAppointments(response.data.appointments);
-        console.log("Dữ liệu trả về:", response.data);
       } else {
-        setAppointments([]); // Không có kết quả
-        console.error(response.data.message);
+        setAppointments([]);
       }
     } catch (error) {
       console.error("Lỗi khi tìm kiếm lịch hẹn:", error);
@@ -121,7 +118,7 @@ const Booking = () => {
 
   const openCancelModal = (idlichhen) => {
     setSelectedAppointmentId(idlichhen);
-    setReason(""); // Reset lý do mỗi lần mở modal
+    setReason("");
     setIsModalVisible(true);
   };
 
@@ -288,7 +285,7 @@ const Booking = () => {
               <TableCell>Thời gian hẹn</TableCell>
               <TableCell>Trạng thái</TableCell>
               {value === 4 && <TableCell>Lý do hủy</TableCell>}
-              {value != 4 && value != 3 && <TableCell>Actions</TableCell>}
+              {value != 4 && value != 3 && <TableCell>Hành động</TableCell>}
             </TableRow>
           </TableHead>
 
@@ -372,7 +369,6 @@ const Booking = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* Hiển thị lý do hủy chỉ khi trạng thái là Đã hủy */}
     </div>
   );
 };

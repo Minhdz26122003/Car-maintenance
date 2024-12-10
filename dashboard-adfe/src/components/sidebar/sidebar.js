@@ -15,6 +15,7 @@ import RoomServiceIcon from "@mui/icons-material/RoomService";
 import PersonIcon from "@mui/icons-material/Person";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = ({ onMenuClick }) => {
@@ -25,6 +26,11 @@ const Sidebar = ({ onMenuClick }) => {
     { text: "Tài khoản", icon: <PersonIcon />, link: "/account" },
     { text: "Dịch vụ", icon: <RoomServiceIcon />, link: "/service" },
     { text: "Trung tâm", icon: <MapsHomeWorkIcon />, link: "/center" },
+    {
+      text: "Dịch vụ -Trung tâm",
+      icon: <FormatAlignCenterIcon />,
+      link: "/sercen",
+    },
     { text: "Khuyến mãi", icon: <LoyaltyIcon />, link: "/sale" },
     { text: "Lịch hẹn", icon: <CalendarMonthIcon />, link: "/booking" },
   ];
@@ -40,7 +46,7 @@ const Sidebar = ({ onMenuClick }) => {
             className={`sidebar-item ${
               location.pathname === item.link ? "active" : ""
             }`}
-            onClick={() => onMenuClick(item.text)} // Gọi hàm khi nhấn vào menu
+            onClick={() => onMenuClick(item.text)}
           >
             <ListItemIcon
               className={`sidebar-icon ${

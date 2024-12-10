@@ -187,7 +187,7 @@ const Sales = () => {
               <TableCell>Ngày bắt đầu</TableCell>
               <TableCell>Ngày kết thúc</TableCell>
               <TableCell>Trạng thái</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
 

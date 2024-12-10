@@ -144,6 +144,10 @@ android {
             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
         }
     }
+    // react {
+    //     enableHermes: true  // Nếu bạn dùng Hermes, bật lại ở đây
+    //     enableTurboModules: false  // Tắt TurboModules
+    // }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`

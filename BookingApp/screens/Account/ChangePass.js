@@ -98,7 +98,7 @@ const ChangePasswordScreen = ({ navigation }) => {
   return (
     <View style={styles.container_su}>
       <Image
-        source={require("../../assets/car5.jpg")}
+        source={require("../../asset/car5.jpg")}
         style={styles.backgroundimage_su}
       />
       <Text style={styles.title_su}>Đổi mật khẩu</Text>

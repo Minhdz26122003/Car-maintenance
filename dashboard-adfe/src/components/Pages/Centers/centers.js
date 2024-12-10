@@ -207,7 +207,7 @@ const Centers = () => {
               {/* <TableCell>Tọa độ X</TableCell>
               <TableCell>Tọa độ Y</TableCell> */}
 
-              <TableCell>Actions</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
 

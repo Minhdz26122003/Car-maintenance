@@ -18,7 +18,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
+import url from "../../ipconfig";
 
 const ManageBookScreen = ({ navigation }) => {
   const [lichHenList, setLichHenList] = useState([]);
@@ -117,7 +117,6 @@ const ManageBookScreen = ({ navigation }) => {
 
   const Thanhtoan = async (idlichhen) => {
     navigation.navigate("PaymentScreen");
-   
   };
   const getLichHenchuaconfirm = async (iduser) => {
     setRefreshing(true);
@@ -149,7 +148,7 @@ const ManageBookScreen = ({ navigation }) => {
       );
       if (response.data.success) {
         setLichHenList1(response.data.lichhen);
-      } 
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -187,7 +186,7 @@ const ManageBookScreen = ({ navigation }) => {
       );
       if (response.data.success) {
         setLichHenList3(response.data.lichhen);
-      } 
+      }
     } catch (error) {
       console.error(error);
     } finally {

@@ -15,7 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useFocusEffect } from "@react-navigation/native";
 import { CheckBox } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import url from "D:/Documents/ReactJS/DoAn4/BookingProject/ipconfig.js";
+import url from "../../ipconfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 
@@ -114,7 +114,7 @@ const BookingScreen = ({ navigation }) => {
         `${url}/myapi/Xe/getxe.php?iduser=${iduser}`
       );
       const data = await response.json();
-
+      console.log("Dữ liệu xe:", data);
       if (data.success && Array.isArray(data.xe)) {
         setCars(data.xe);
       }
@@ -321,6 +321,7 @@ const BookingScreen = ({ navigation }) => {
       });
 
       const result = await response.json();
+
       console.log("lichhen", result);
 
       if (result.success) {
@@ -331,7 +332,6 @@ const BookingScreen = ({ navigation }) => {
         navigation.navigate("ManageBookScreen");
       } else {
         console.error("Lỗi", result.message);
-        Alert.alert("Lỗi", result.message);
       }
     } catch (error) {
       console.error("Error confirming booking:", error);
