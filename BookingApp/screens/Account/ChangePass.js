@@ -20,7 +20,7 @@ const ChangePasswordScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  const [currentPassword, setCurrentPassword] = useState("");
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await getUserData();
@@ -43,8 +43,12 @@ const ChangePasswordScreen = ({ navigation }) => {
     }
   };
   const ChangePass = async () => {
-    // Kiểm tra xem tất cả các trường đã nhập chưa và mật khẩu có trùng khớp
-    if (username === "" || password === "" || confirmPassword === "") {
+    if (
+      username === "" ||
+      currentPassword === "" ||
+      password === "" ||
+      confirmPassword === ""
+    ) {
       Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin.");
       return;
     }
@@ -53,41 +57,37 @@ const ChangePasswordScreen = ({ navigation }) => {
       Alert.alert("Lỗi", "Mật khẩu xác nhận không trùng khớp.");
       return;
     }
-    if (password.length < 6) {
-      setError("Mật khẩu mới phải ít nhất 6 ký tự.");
-      return;
-    }
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn đổi mật khẩu của tài khoản này không?"
-    );
 
-    if (!confirmDelete) {
+    if (password.length < 6) {
+      Alert.alert("Lỗi", "Mật khẩu mới phải ít nhất 6 ký tự.");
       return;
     }
+
     try {
       const response = await fetch(
-        `${url}myapi/Taikhoan/doimatkau.php?iduser=${iduser}`,
+        `${url}myapi/Taikhoan/doimatkhau.php?iduser=${iduser}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: username,
-            password: password,
+            iduser,
+            currentPassword,
+            password,
           }),
         }
       );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+
       const data = await response.json();
+      // console.log("data", iduser, currentPassword, password);
       if (data.success) {
-        Alert.alert("Thành công", "Đăng ký thành công. Hãy đăng nhập.");
+        Alert.alert("Thành công", "Đổi mật khẩu thành công.");
+        setCurrentPassword("");
         setPassword("");
-        setUsername("");
+        setConfirmPassword("");
       } else {
-        Alert.alert("Đăng ký thất bại", data.message);
+        Alert.alert("Lỗi", data.message);
       }
     } catch (error) {
       console.error(error);
@@ -113,6 +113,24 @@ const ChangePasswordScreen = ({ navigation }) => {
         />
       </View>
       <Text style={styles.title}>Mật khẩu cũ</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input_su}
+          placeholder="Current Password"
+          secureTextEntry={!showPassword}
+          onChangeText={(text) => setCurrentPassword(text)}
+          value={currentPassword}
+        />
+        <Icon
+          style={styles.icon_pass}
+          name={showPassword ? "visibility" : "visibility-off"}
+          size={24}
+          color="gray"
+          onPress={() => setShowPassword(!showPassword)}
+        />
+      </View>
+
+      <Text style={styles.title}>Mật khẩu mới</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input_su}
@@ -171,7 +189,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     resizeMode: "cover",
-    zIndex: -1,
+
     opacity: 0.3,
   },
   title: {

@@ -21,7 +21,6 @@ const SignupScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
-    // Kiểm tra xem tất cả các trường đã nhập chưa và mật khẩu có trùng khớp
     if (
       username === "" ||
       email === "" ||
@@ -166,7 +165,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     resizeMode: "cover",
-    zIndex: -1,
     opacity: 0.3,
   },
   title_su: {

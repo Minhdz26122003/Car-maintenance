@@ -199,7 +199,7 @@ const Service = () => {
   const toggleExpand = (id) => {
     setExpandedRows((prev) => ({
       ...prev,
-      [id]: !prev[id], // Đảo trạng thái mở rộng/thu gọn
+      [id]: !prev[id],
     }));
   };
 

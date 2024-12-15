@@ -198,8 +198,22 @@ const Sales = () => {
                   <TableCell>{sale.idkm}</TableCell>
                   <TableCell>{sale.mota}</TableCell>
                   <TableCell>{formatPrice(sale.giatri)}</TableCell>
-                  <TableCell>{sale.ngaybatdau}</TableCell>
-                  <TableCell>{sale.ngayketthuc}</TableCell>
+                  <TableCell>
+                    {new Date(sale.ngaybatdau).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </TableCell>
+
+                  <TableCell>
+                    {new Date(sale.ngayketthuc).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </TableCell>
+
                   <TableCell>{sale.trangthai}</TableCell>
 
                   <TableCell className="sale-table-actions">

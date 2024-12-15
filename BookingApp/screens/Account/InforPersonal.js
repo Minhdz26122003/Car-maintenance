@@ -117,15 +117,7 @@ const InforPersonal = ({ navigation }) => {
       alert("Có lỗi xảy ra, vui lòng thử lại sau.");
     }
   };
-  const handleSave = async (userData) => {
-    // Lưu username mới vào AsyncStorage
-    try {
-      await AsyncStorage.setItem("userData", JSON.stringify(userData));
-      navigation.goBack(); // Quay lại màn hình cá nhân
-    } catch (error) {
-      console.error("Lỗi lưu username:", error);
-    }
-  };
+
   const convertTrangThai = (setStatus) => {
     const trangThaiMap = {
       0: "Khách hàng",

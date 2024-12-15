@@ -19,7 +19,7 @@ const ListServices = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [searchText, setSearchText] = useState("");
 
   const [Services, setService] = useState([]);
@@ -40,6 +40,14 @@ const ListServices = ({ navigation }) => {
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
+  const handlePriceChangeMin = (value) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPriceRange({ ...priceRange, min: numericValue });
+  };
+  const handlePriceChangeMax = (value) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPriceRange({ ...priceRange, max: numericValue });
+  };
   const Filters = () => {
     if (priceRange.min > priceRange.max) {
       alert("Giá tối thiểu không thể lớn hơn giá tối đa.");
@@ -56,7 +64,7 @@ const ListServices = ({ navigation }) => {
       );
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (data.success) {
         setService(data.services);
       }
@@ -92,18 +100,16 @@ const ListServices = ({ navigation }) => {
             style={styles.input}
             placeholder="Tối thiểu"
             keyboardType="numeric"
-            onChangeText={(value) =>
-              setPriceRange({ ...priceRange, min: Number(value) })
-            }
+            value={priceRange.min ? formatPrice(priceRange.min) : ""}
+            onChangeText={handlePriceChangeMin}
           />
           <Text>đến:</Text>
           <TextInput
             style={styles.input}
             placeholder="Tối đa"
             keyboardType="numeric"
-            onChangeText={(value) =>
-              setPriceRange({ ...priceRange, max: Number(value) })
-            }
+            value={priceRange.max ? formatPrice(priceRange.max) : ""}
+            onChangeText={handlePriceChangeMax}
           />
         </View>
 

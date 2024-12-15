@@ -7,16 +7,45 @@ import {
   FlatList,
   ScrollView,
   Linking,
+  TextInput,
+  Alert,
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import url from "../../ipconfig";
+import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CenterDetailScreen = ({ route, navigation }) => {
-  const { item } = route.params; // Lấy dữ liệu trung tâm từ params
+  const { item } = route.params;
+  const [iduser, setIduser] = useState("");
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState("");
+  const [rating, setRating] = useState(0);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userData = await getUserData();
+      if (userData) {
+        setIduser(userData.iduser);
+      }
+    };
+    loadUserData();
+  }, []);
+
+  // Lấy thông tin người dùng
+  const getUserData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("userData");
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error("Lỗi lấy thông tin người dùng:", error);
+      return null;
+    }
+  };
 
   // Gọi API để lấy danh sách dịch vụ
   const fetchServicesByCenter = async () => {
@@ -36,21 +65,70 @@ const CenterDetailScreen = ({ route, navigation }) => {
     }
     return giatri.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
   };
-  // const fetchReviews = async () => {
-  //   try {
-  //     const response = await fetch("API_URL"); // URL API của bạn
-  //     const data = await response.json();
-  //     setReviews(data.reviews); // gán dữ liệu reviews từ API
-  //     // setAverageRating(data.averageRating); // tính toán điểm trung bình từ API
-  //     // setLoadingReviews(false);
-  //   } catch (error) {
-  //     console.error("Lỗi tải đánh giá:", error);
-  //   }
-  // };
+
+  // Gọi API để lấy danh sách bình luận
+  const fetchReviews = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${url}/myapi/Danhgia/getdanhgia.php?idtrungtam=${item.idtrungtam}`
+      );
+      const data = await response.json();
+
+      if (data.ratings && Array.isArray(data.ratings)) {
+        setReviews(data.ratings);
+      } else {
+        console.log("Dữ liệu bình luận không hợp lệ.");
+      }
+    } catch (error) {
+      console.error("Lỗi tải đánh giá:", error);
+    }
+    setLoading(false);
+  };
+
+  // Hàm thêm bình luận
+  const handleAddReview = async () => {
+    if (!newReview.trim()) {
+      Alert.alert("Thông báo", "Phải nhập nội dung bình luận.");
+      return;
+    }
+
+    if (!rating || rating <= 0) {
+      Alert.alert("Thông báo", "Phải đánh giá sao trước khi gửi.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${url}/myapi/Danhgia/themdanhgia.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idtrungtam: item.idtrungtam,
+          iduser: iduser,
+          noidung: newReview,
+          danhgia: rating,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchReviews();
+        setNewReview("");
+        setRating(0);
+      } else {
+        console.log("Lỗi khi thêm bình luận:", data.message);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi bình luận:", error);
+    }
+  };
 
   useEffect(() => {
     fetchServicesByCenter();
-    // fetchReviews();
+    fetchReviews();
   }, []);
 
   return (
@@ -80,8 +158,6 @@ const CenterDetailScreen = ({ route, navigation }) => {
             <Text style={styles.headerItemText}>Chia sẻ</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Thông tin trung tâm */}
 
         <View>
           <View style={styles.garageInfoRow}>
@@ -114,7 +190,6 @@ const CenterDetailScreen = ({ route, navigation }) => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.serviceCard}
-                key={item.iddichvu}
                 onPress={() =>
                   navigation.navigate("ServiceDetailScreen", { item })
                 }
@@ -207,8 +282,64 @@ const CenterDetailScreen = ({ route, navigation }) => {
           />
         </MapView>
 
-        <View>
-          <Text style={styles.serviceHeader}>Đánh Giá Trung Tâm</Text>
+        {/* Phần bình luận */}
+        <Text style={styles.serviceHeader}>Bình luận và Đánh giá</Text>
+        <View style={styles.reviewsContainer}>
+          {/* Hiển thị danh sách bình luận */}
+          {reviews.length === 0 ? (
+            <Text>Chưa có bình luận nào.</Text>
+          ) : (
+            reviews.map((review) => (
+              <View key={review.iddanhgia} style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <Image
+                    source={require("../../asset/account.jpg")}
+                    style={styles.avatar}
+                  />
+                  <View>
+                    <Text style={styles.reviewAuthor}>#{review.username}</Text>
+                    <Text style={styles.reviewDate}>{review.ngaybinhluan}</Text>
+                  </View>
+                </View>
+                <Text style={styles.reviewContent}>{review.noidung}</Text>
+                <Text style={styles.reviewRating}>
+                  Đánh giá: {review.danhgia} sao
+                </Text>
+              </View>
+            ))
+          )}
+
+          <View style={styles.fromcm}>
+            {/* Form thêm bình luận */}
+            <TextInput
+              style={styles.input}
+              placeholder="Thêm bình luận..."
+              value={newReview}
+              onChangeText={setNewReview}
+              multiline
+            />
+            <View style={styles.ratingRow}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setRating(star)}
+                  style={styles.starButton}
+                >
+                  <FontAwesome
+                    name={star <= rating ? "star" : "star-o"}
+                    size={24}
+                    color="#FFD700"
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity
+              onPress={handleAddReview}
+              style={styles.addReviewButton}
+            >
+              <Text style={styles.addReviewText}>Gửi bình luận</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -226,11 +357,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginBottom: 20,
   },
-  headerText: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 5,
-  },
   headerItem: {
     alignItems: "center",
   },
@@ -239,7 +365,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
   },
-
   garageImage: {
     width: "100%",
     height: 200,
@@ -255,7 +380,6 @@ const styles = StyleSheet.create({
     height: 200,
     marginVertical: 10,
   },
-
   garageInfoRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -266,35 +390,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "#666",
   },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  ratingText: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   serviceHeader: {
     fontSize: 18,
     fontWeight: "bold",
     marginVertical: 10,
   },
-  serviceItem: {
-    padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    marginVertical: 5,
-  },
-
-  serviceDescription: {
-    fontSize: 14,
-    color: "#666",
-  },
   serviceCard: {
     flexDirection: "row",
-    width: 250,
+    width: 300,
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
@@ -313,22 +416,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 15,
   },
-  serviceInfo: {
-    flex: 1,
-  },
   serviceName: {
     fontSize: 13,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
+    width: 200,
   },
-
   servicePrice: {
     fontSize: 14,
-    color: "#007BFF", // Màu xanh để làm nổi bật giá
+    color: "#007BFF",
     fontWeight: "bold",
   },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -340,20 +439,103 @@ const styles = StyleSheet.create({
   },
   workingHoursRow: {
     flexDirection: "row",
-    justifyContent: "space-between", // Căn giữa các phần tử
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
   },
   dayText: {
     fontSize: 16,
     color: "#666",
-    flex: 1, // Chiếm không gian bên trái
+    flex: 1,
   },
   timeText: {
     fontSize: 16,
     color: "#666",
-    textAlign: "right", // Căn phải cho thời gian
+    textAlign: "right",
     flex: 1,
+  },
+  fromcm: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  reviewsContainer: {
+    paddingHorizontal: 10,
+  },
+  reviewCard: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  reviewHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  reviewAuthor: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  reviewDate: {
+    fontSize: 12,
+    color: "#888",
+  },
+  reviewContent: {
+    fontSize: 14,
+    marginVertical: 5,
+    color: "#333",
+  },
+  reviewRating: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#FFD700",
+  },
+  input: {
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
+    fontSize: 14,
+    borderColor: "#ddd",
+    borderWidth: 1,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  starButton: {
+    marginHorizontal: 5,
+  },
+  addReviewButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  addReviewText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

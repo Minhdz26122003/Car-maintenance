@@ -50,7 +50,7 @@ const ListCenters = ({ navigation }) => {
         `${url}myapi/Trungtam/tktrungtam.php?tentrungtam=${tentrungtam}`
       );
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
 
       if (data.success) {
         setCenter(data.centers);

@@ -14,7 +14,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../ipconfig";
 import { Ionicons } from "@expo/vector-icons";
-import { version } from "../../package.json";
 
 const ProfileScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -24,7 +23,6 @@ const ProfileScreen = ({ navigation }) => {
   const [sodienthoai, setSodienthoai] = useState("");
   const [email, setEmail] = useState("");
 
-  // Đọc dữ liệu người dùng khi màn hình được focus
   useFocusEffect(
     React.useCallback(() => {
       const loadUserData = async () => {
@@ -39,7 +37,7 @@ const ProfileScreen = ({ navigation }) => {
         }
       };
 
-      loadUserData(); // Gọi hàm loadUserData mỗi khi màn hình được focus
+      loadUserData();
     }, [])
   );
 
@@ -102,12 +100,20 @@ const ProfileScreen = ({ navigation }) => {
       onPress: () => handleNavigate("ManageBookScreen"),
     },
     {
+      key: "QLBL",
+      title: "Quản lý bình luận",
+      description: "Quản lý thông tin binh luận của bạn",
+      icon: "albums-outline",
+      onPress: () => handleNavigate("ManageReviewScreen"),
+    },
+    {
       key: "DMK",
       title: "Đổi mật khẩu",
       description: "Đổi mật khẩu cho tài khoản của bạn",
       icon: "bookmark-outline",
       onPress: () => handleNavigate("ChangePasswordScreen"),
     },
+
     {
       key: "DX",
       title: "Đăng xuất",

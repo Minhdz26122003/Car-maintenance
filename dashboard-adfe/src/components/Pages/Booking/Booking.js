@@ -97,6 +97,7 @@ const Booking = () => {
       const response = await axios.get(
         `${url}myapi/Lichhen/tkLichhen.php?start_date=${startDate}&end_date=${endDate}`
       );
+      console.log(response.data);
 
       if (response.data.success) {
         setAppointments(response.data.appointments);
@@ -276,7 +277,7 @@ const Booking = () => {
         <Table aria-label="appointment table" className="book-table">
           <TableHead className="head-book">
             <TableRow>
-              {/* <TableCell>ID</TableCell> */}
+              <TableCell>ID</TableCell>
               <TableCell>Tên người dùng</TableCell>
               <TableCell>Biển số xe</TableCell>
               <TableCell>Tên trung tâm</TableCell>
@@ -293,12 +294,19 @@ const Booking = () => {
             {filteredAppointments.length > 0 ? (
               filteredAppointments.map((appointment) => (
                 <TableRow key={appointment.idlichhen}>
-                  {/* <TableCell>{appointment.idlichhen}</TableCell> */}
+                  <TableCell>{appointment.idlichhen}</TableCell>
                   <TableCell>{appointment.username}</TableCell>
                   <TableCell>{appointment.idxe}</TableCell>
                   <TableCell>{appointment.tentrungtam}</TableCell>
                   <TableCell>{appointment.tendichvu}</TableCell>
-                  <TableCell>{appointment.ngayhen}</TableCell>
+                  <TableCell>
+                    {new Date(appointment.ngayhen).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </TableCell>
+
                   <TableCell>{appointment.thoigianhen}</TableCell>
                   <TableCell>
                     {convertTrangThai(appointment.trangthai)}

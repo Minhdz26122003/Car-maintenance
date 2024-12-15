@@ -46,11 +46,12 @@ const ManageCarScreen = () => {
   };
 
   const fetchUserCar = async (iduser) => {
+    setLoading(true);
     try {
       const response = await fetch(`${url}myapi/Xe/getxe.php?iduser=${iduser}`);
       //console.log("iduser", iduser);
       const text = await response.text();
-      console.log("error", text);
+      // console.log("error", text);
       const data = JSON.parse(text);
       if (data.success) {
         setCar(data.xe);
@@ -89,7 +90,7 @@ const ManageCarScreen = () => {
   //             const data = JSON.parse(text);
   //             if (data.success) {
   //               Alert.alert("Thành công", "Xóa xe thành công!");
-  //               fetchCars(); // Cập nhật danh sách xe
+  //               fetchCars();
   //             } else {
   //               Alert.alert("Lỗi", `Xóa xe thất bại: ${data.message}`);
   //             }
@@ -123,7 +124,7 @@ const ManageCarScreen = () => {
                 />
                 <View style={styles.inforcar}>
                   <Text>Biển số xe: {item.idxe}</Text>
-                  <Text>Hãng xe: {item.hangxe}</Text>
+                  <Text>Tên xe: {item.hangxe}</Text>
                   <Text>Năm sản xuất: {item.namsx}</Text>
                 </View>
 
@@ -139,9 +140,9 @@ const ManageCarScreen = () => {
                   }
                 >
                   <Ionicons name="create-outline" size={24} color="#ff0000" />
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
 
-                <TouchableOpacity onPress={() => deleteCar(item.idxe, iduser)}>
+                {/* <TouchableOpacity onPress={() => deleteCar(item.idxe, iduser)}>
                   <Ionicons name="trash-outline" size={24} color="#ff0000" />
                 </TouchableOpacity> */}
               </View>
@@ -162,6 +163,7 @@ const styles = StyleSheet.create({
   containerxe: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-around",
   },
   title: {
     fontSize: 24,

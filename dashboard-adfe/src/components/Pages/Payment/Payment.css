@@ -1,0 +1,76 @@
+/* Định dạng bảng */
+.payment-table-container {
+  position: relative;
+  left: 170px;
+  max-width: 88%;
+}
+.tabstatus {
+  position: relative;
+  left: 170px;
+  font-weight: bold;
+  background-color: aliceblue;
+  max-width: 88%;
+  margin-bottom: 20px;
+}
+/* CSS */
+.MuiTabs-root .MuiTab-root.Mui-selected {
+  background-color: #bee6ff; /* Màu nền khi active */
+}
+
+.tabitem {
+  border: 0.5px solid black;
+  font-weight: bold;
+  margin: 0 4px;
+  border-radius: 4px;
+}
+
+.head-payment th {
+  background-color: rgb(245, 215, 216);
+  font-weight: bold;
+  font-size: 16px;
+}
+.payment-search-bar {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 170px;
+  background-color: rgb(245, 253, 255);
+  padding: 10px;
+  max-width: 50%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.payment-search-start {
+  width: 400px;
+}
+.payment-search-end {
+  width: 400px;
+}
+.payment-table {
+  border-collapse: collapse;
+}
+
+.payment-table th,
+.payment-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.payment-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

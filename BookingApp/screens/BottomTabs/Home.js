@@ -10,12 +10,22 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  Dimensions,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/Ionicons";
 import url from "../../ipconfig";
+import Carousel from "react-native-snap-carousel";
 
+const { width: viewportWidth } = Dimensions.get("window");
+const banners = [
+  require("../../asset/Banner.jpg"),
+  require("../../asset/Banner2.png"),
+  require("../../asset/Banner3.jpg"),
+  require("../../asset/Banner4.png"),
+  require("../../asset/Banner5.jpg"),
+];
 const HomeScreen = ({ navigation }) => {
   const [services, setServices] = useState([]);
   const [centers, setCenters] = useState([]);
@@ -80,6 +90,10 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const renderItem = ({ item }) => {
+    return <Image source={item} style={styles.banner} resizeMode="cover" />;
+  };
+
   // GET services
   const fetchServices = async () => {
     try {
@@ -141,16 +155,36 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            {/* Search Bar */}
-            <View style={styles.searchBar}>
-              <TextInput placeholder="Search" style={styles.searchInput} />
-            </View>
-
             {/* Banner */}
-            <Image
-              source={require("../../asset/Banner.jpg")}
-              style={styles.banner}
+            <Carousel
+              data={banners}
+              renderItem={renderItem}
+              sliderWidth={viewportWidth}
+              itemWidth={viewportWidth}
+              loop={true}
+              autoplay={true}
+              autoplayInterval={2000}
             />
+
+            {/* Search Bar */}
+
+            <View style={styles.searchBar}>
+              {/* Button to navigate to Search Screen 1 */}
+              <TouchableOpacity
+                style={styles.searchButton}
+                onPress={() => navigation.navigate("ListServices")}
+              >
+                <Text style={styles.buttonText}>Tìm kiếm dịch vụ</Text>
+              </TouchableOpacity>
+
+              {/* Button to navigate to Search Screen 2 */}
+              <TouchableOpacity
+                style={styles.searchButton}
+                onPress={() => navigation.navigate("ListCenters")}
+              >
+                <Text style={styles.buttonText}>Tìm kiếm trung tâm</Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Service Speciality */}
             <View style={styles.sectionHeader}>
@@ -158,7 +192,7 @@ const HomeScreen = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => navigation.navigate("ListServices")}
               >
-                <Text style={styles.seeAll}>See All</Text>
+                <Text style={styles.seeAll}>Tất cả</Text>
               </TouchableOpacity>
             </View>
 
@@ -207,7 +241,7 @@ const HomeScreen = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => navigation.navigate("ListCenters")}
               >
-                <Text style={styles.seeAll}>See All</Text>
+                <Text style={styles.seeAll}>Tất cả</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -239,6 +273,30 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 30,
     backgroundColor: "#fff",
+  },
+  searchBar: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    padding: 10,
+  },
+
+  searchButton: {
+    backgroundColor: "#fff8dc",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  buttonText: {
+    color: "#333333",
+    fontWeight: "bold",
+    fontSize: 14,
+    textAlign: "center",
   },
   header: {
     flexDirection: "row",
@@ -277,10 +335,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  searchBar: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
+
   searchInput: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -290,8 +345,9 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: "100%",
-    height: 150,
+    height: 200,
     marginVertical: 10,
+    borderRadius: 10,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -305,7 +361,7 @@ const styles = StyleSheet.create({
   },
   seeAll: {
     fontSize: 14,
-    color: "#4CAF50",
+    color: "red",
   },
   speciality: {
     alignItems: "center",

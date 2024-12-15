@@ -1,0 +1,58 @@
+/* Định dạng bảng */
+.review-table-container {
+  position: static;
+  margin-left: 170px;
+  max-width: 88%;
+}
+.head-review th {
+  background-color: rgb(236, 209, 210);
+  font-weight: bold;
+  font-size: 16px;
+}
+.review-table {
+  border-collapse: collapse;
+}
+.review-search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 170px;
+  background-color: aliceblue;
+  max-width: 100%;
+  padding: 0px 10px 10px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.review-search-select {
+  margin-top: 8px;
+  margin-left: 20px;
+  flex: 1;
+}
+
+.review-search-nd {
+  flex: 2;
+}
+.review-table th,
+.review-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.review-table-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

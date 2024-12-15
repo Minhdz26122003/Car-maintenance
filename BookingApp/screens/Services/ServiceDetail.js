@@ -58,25 +58,6 @@ const ServiceDetailScreen = ({ route, navigation }) => {
           <Image source={{ uri: item.hinhanh }} style={styles.serviceImage} />
           <Text style={styles.textname}>{item.tendichvu}</Text>
 
-          {/* Tính năng đánh giá sao */}
-          <View style={styles.starRatingContainer}>
-            <Text style={styles.tittle}>Đánh giá:</Text>
-            <View style={styles.starContainer}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity
-                  key={star}
-                  onPress={() => setRating(star)}
-                  style={styles.starButton}
-                >
-                  <FontAwesome
-                    name={star <= rating ? "star" : "star-o"}
-                    size={24}
-                    color="#FFD700"
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
           {/* Phần About (Mô tả dịch vụ) */}
           <View>
             <View style={styles.headerText}>

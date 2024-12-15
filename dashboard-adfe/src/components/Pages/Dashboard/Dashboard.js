@@ -20,7 +20,9 @@ import {
   Legend,
   ComposedChart,
   Area,
+  LabelList,
   Line,
+  LineChart,
   ResponsiveContainer,
 } from "recharts";
 
@@ -37,15 +39,21 @@ const Dashboard = () => {
   const [appointments, setTotalAppointments] = useState(0);
   const [year, setYear] = useState(2024);
   const [datamonth, setDataMonth] = useState([]);
+  const [revenue, setRevenue] = useState([]);
   const [datayear, setDataYear] = useState([]);
+  const [price, setPrice] = useState([]);
+
   useEffect(() => {
     TkeMonth();
     TkeYear();
+    TkeDthu();
     fetchUser();
     fetchService();
     fetchCenter();
     fetchAppointment();
+    fetchRenvenue();
   }, [month, year]);
+
   const fetchUser = async () => {
     try {
       const response = await axios.get(`${url}myapi/Thongke/tkenguoidung.php`);
@@ -84,6 +92,19 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching appointment statistics:", error);
+    }
+  };
+  const fetchRenvenue = async () => {
+    try {
+      const response = await axios.get(
+        `${url}myapi/Thongke/tkedoanhthusort.php`
+      );
+      console.log(response.data);
+      if (response.data.success) {
+        setPrice(response.data.doanhthu);
+      }
+    } catch (error) {
+      console.error("Error fetching doanh thu :", error);
     }
   };
 
@@ -127,6 +148,43 @@ const Dashboard = () => {
       console.error("Error fetching statistics:", error);
     }
   };
+  const TkeDthu = async () => {
+    try {
+      const response = await axios.get(
+        `${url}myapi/Thongke/tkedoanhthu.php?&year=${year}`
+      );
+      console.log("API response:", response.data);
+
+      if (
+        response.data.success &&
+        Array.isArray(response.data.statistics?.monthly_revenue)
+      ) {
+        const chartDatas2 = response.data.statistics.monthly_revenue.map(
+          (item) => ({
+            pay_month: item.pay_month, // Tháng
+            total_revenue: parseFloat(item.total_revenue), // Doanh thu
+          })
+        );
+        setRevenue(chartDatas2);
+      } else {
+        console.error(
+          "Invalid data structure or empty monthly_revenue:",
+          response.data
+        );
+        setRevenue([]);
+      }
+    } catch (error) {
+      console.error("Error fetching revenue:", error);
+      setRevenue([]);
+    }
+  };
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(value);
+  };
+
   return (
     <div className="dashboard-container">
       {/* Container for cards */}
@@ -136,7 +194,7 @@ const Dashboard = () => {
             <Typography variant="h6" component="div">
               Tổng người dùng
             </Typography>
-            <Typography variant="h4">{user}</Typography>
+            <Typography variant="h5">{user}</Typography>
           </CardContent>
         </Card>
 
@@ -145,7 +203,7 @@ const Dashboard = () => {
             <Typography variant="h6" component="div">
               Doanh thu
             </Typography>
-            <Typography variant="h4">$3,787</Typography>
+            <Typography variant="h5">{formatCurrency(price)}</Typography>
           </CardContent>
         </Card>
 
@@ -154,7 +212,7 @@ const Dashboard = () => {
             <Typography variant="h6" component="div">
               Tổng dịch vụ
             </Typography>
-            <Typography variant="h4">{service}</Typography>
+            <Typography variant="h5">{service}</Typography>
           </CardContent>
         </Card>
 
@@ -163,7 +221,7 @@ const Dashboard = () => {
             <Typography variant="h6" component="div">
               Số trung tâm
             </Typography>
-            <Typography variant="h4">{center}</Typography>
+            <Typography variant="h5">{center}</Typography>
           </CardContent>
         </Card>
         <Card className="card purple ">
@@ -171,7 +229,7 @@ const Dashboard = () => {
             <Typography variant="h6" component="div">
               Tổng lượt đặt
             </Typography>
-            <Typography variant="h4">{appointments}</Typography>
+            <Typography variant="h5">{appointments}</Typography>
           </CardContent>
         </Card>
       </div>
@@ -207,92 +265,107 @@ const Dashboard = () => {
         </FormControl>
       </div>
       {/* Biểu đồ ComposedChart */}
-      <div className="chart-container">
-        {/* Biểu đồ tổng hợp lịch hẹn */}
-        <div className="composed-chart-container">
-          <Typography variant="h6" component="div" className="chart-title">
-            Biểu đồ tổng hợp lịch hẹn
-          </Typography>
-          <ResponsiveContainer width="100%" height="90%">
-            <ComposedChart data={datamonth}>
-              <XAxis
-                dataKey="appointment_date"
-                tickFormatter={(date) => {
-                  const [year, month, day] = date.split("-");
-                  return `${day}-${month}-${year}`;
-                }}
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <CartesianGrid stroke="#f5f5f5" />
-              {/* <Area
-              type="monotone"
-              dataKey="total_daily_appointments"
-              fill="#32f075"
-              stroke="#32f075"
-            /> */}
-              <Bar dataKey="total_user" barSize={20} fill="#413ea0" />
-              <Line
-                type="total_appoinments"
-                dataKey="total_appoinments"
-                stroke="#ff7300"
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
 
-        {/* Biểu đồ AreaChart */}
+      <div className="chart-container">
+        {/* Biểu đồ doanh thu (LineChart) */}
         <div className="area-chart-container">
           <Typography variant="h6" component="div" className="chart-title">
-            Biểu đồ người dùng đặt lịch trong ngày
+            Biểu đồ tổng doanh thu trong tháng
           </Typography>
-          <ResponsiveContainer width="100%" height="90%">
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={datamonth}
-              margin={{
-                top: 10,
-                right: 30,
-                left: 0,
-                bottom: 0,
-              }}
+              data={revenue}
+              margin={{ left: 40, right: 20, top: 10, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="appointment_date"
-                tickFormatter={(date) => {
-                  const [year, month, day] = date.split("-");
-                  return `${day}-${month}-${year}`;
+              <XAxis dataKey="pay_month" />
+              <YAxis
+                label={{
+                  value: "Doanh thu",
+                  angle: -90,
+                  position: "insideLeft",
                 }}
+                tickFormatter={formatCurrency} //
               />
-              <YAxis />
-              <Tooltip />
+              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <Legend />
               <Area
                 type="monotone"
-                dataKey="total_user"
-                stroke="#323bf0"
-                fill="#ff7300"
-              />
+                dataKey="total_revenue"
+                stroke="#8884d8"
+                fill="#8884d8"
+                name="Tổng doanh thu trong tháng"
+              >
+                <LabelList
+                  dataKey="total_revenue"
+                  position="top"
+                  formatter={(value) => formatCurrency(value)}
+                />
+              </Area>
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Biểu đồ BarChart */}
+        {/* Biểu đồ thanh (BarChart) */}
         <div className="bar-chart-container">
           <Typography variant="h6" component="div" className="chart-title">
             Biểu đồ tổng lịch hẹn theo tháng
           </Typography>
-          <ResponsiveContainer width="100%" height="90%">
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={datayear}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="appointment_month" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="total_appoinments_month" fill="#f03232" />
+              <Bar
+                dataKey="total_appoinments_month"
+                fill="#f03232"
+                name="Số lịch hẹn trong tháng"
+              >
+                <LabelList dataKey="total_appoinments_month" position="top" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Biểu đồ kết hợp (ComposedChart) */}
+      <div className="composed-chart-container">
+        <Typography variant="h6" component="div" className="chart-title">
+          Biểu đồ tổng hợp lịch hẹn và người dùng trong tháng
+        </Typography>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={datamonth}>
+            <XAxis
+              dataKey="appointment_date"
+              tickFormatter={(date) => {
+                const [year, month, day] = date.split("-");
+                return `${day}-${month}-${year}`;
+              }}
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <CartesianGrid stroke="#f5f5f5" />
+            <Bar
+              dataKey="total_user"
+              barSize={20}
+              fill="#413ea0"
+              name="Số người dùng"
+            >
+              <LabelList dataKey="total_user" position="top" />
+            </Bar>
+            <Line
+              type="total_appoinments"
+              dataKey="total_appoinments"
+              stroke="#ff7300"
+              name="Số lịch hẹn"
+            >
+              <LabelList dataKey="total_appoinments" position="top" />
+            </Line>
+          </ComposedChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

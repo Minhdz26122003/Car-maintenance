@@ -17,6 +17,8 @@ import Booking from "./components/Pages/Booking/Booking";
 import Profile from "./components/Pages/Profile/profile";
 import Login from "./components/Pages/Login/Login";
 import Sercen from "./components/Pages/Ser-Cen/ServiceCen";
+import Payment from "./components/Pages/Payment/Payment";
+import Review from "./components/Pages/Review/Review";
 import { Box } from "@mui/material";
 import "./App.css";
 
@@ -122,6 +124,14 @@ function App() {
               <Route
                 path="/booking"
                 element={<PrivateRoute element={<Booking />} />}
+              />
+              <Route
+                path="/payment"
+                element={<PrivateRoute element={<Payment />} />}
+              />
+              <Route
+                path="/review"
+                element={<PrivateRoute element={<Review />} />}
               />
               <Route
                 path="/profile"

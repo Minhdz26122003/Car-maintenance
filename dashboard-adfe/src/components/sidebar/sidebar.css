@@ -14,9 +14,9 @@
 
   background: linear-gradient(
     106.37deg,
-    #ffeae0 29.63%,
-    #ffe5e5 51.55%,
-    #e3ffde 90.85%
+    #fdf4ef 29.63%,
+    #faeded 51.55%,
+    #f1ffee 90.85%
   );
 }
 
@@ -59,7 +59,7 @@
 .sidebar-icon.active {
   color: #1976d2;
 
-  transform: scale(1.2) rotate(180deg); /* xoay khi active */
+  transform: scale(1.2);
 }
 
 .sidebar-icon:hover {

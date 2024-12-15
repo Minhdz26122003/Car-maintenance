@@ -16,6 +16,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
+import PaidIcon from "@mui/icons-material/Paid";
+import CommentIcon from "@mui/icons-material/Comment";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = ({ onMenuClick }) => {
@@ -33,6 +35,8 @@ const Sidebar = ({ onMenuClick }) => {
     },
     { text: "Khuyến mãi", icon: <LoyaltyIcon />, link: "/sale" },
     { text: "Lịch hẹn", icon: <CalendarMonthIcon />, link: "/booking" },
+    { text: "Hóa đơn", icon: <PaidIcon />, link: "/payment" },
+    { text: "Bình luận", icon: <CommentIcon />, link: "/review" },
   ];
   return (
     <Drawer classes={{ paper: "sidebar-container" }} variant="permanent">

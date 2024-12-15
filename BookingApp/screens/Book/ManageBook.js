@@ -115,9 +115,10 @@ const ManageBookScreen = ({ navigation }) => {
     }
   };
 
-  const Thanhtoan = async (idlichhen) => {
-    navigation.navigate("PaymentScreen");
+  const Thanhtoan = (idlichhen) => {
+    navigation.navigate("PaymentScreen", { idlichhen });
   };
+
   const getLichHenchuaconfirm = async (iduser) => {
     setRefreshing(true);
     try {
@@ -537,7 +538,6 @@ const ManageBookScreen = ({ navigation }) => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

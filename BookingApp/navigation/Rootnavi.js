@@ -15,6 +15,7 @@ import ServiceDetailScreen from "../screens/Services/ServiceDetail";
 import PaymentScreen from "../screens/Payments/payments";
 import ListServices from "../screens/Services/ListServices";
 import InforPersonal from "../screens/Account/InforPersonal";
+import ManageReviewScreen from "../screens/Review/ManageReview";
 import ListCenters from "../screens/Center/ListCenter";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -149,6 +150,11 @@ const Rootnavi = () => {
           name="ChangePasswordScreen"
           component={ChangePasswordScreen}
           options={{ title: "ChangePassword Screen " }}
+        />
+        <Stack.Screen
+          name="ManageReviewScreen"
+          component={ManageReviewScreen}
+          options={{ title: "ManageReview Screen " }}
         />
       </Stack.Navigator>
     </NavigationContainer>

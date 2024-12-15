@@ -114,7 +114,7 @@ const BookingScreen = ({ navigation }) => {
         `${url}/myapi/Xe/getxe.php?iduser=${iduser}`
       );
       const data = await response.json();
-      console.log("Dữ liệu xe:", data);
+      // console.log("Dữ liệu xe:", data);
       if (data.success && Array.isArray(data.xe)) {
         setCars(data.xe);
       }
@@ -376,10 +376,10 @@ const BookingScreen = ({ navigation }) => {
               />
             </View>
             <View style={styles.groupaddcar}>
-              <Text style={styles.textnewcar}>Hãng xe: </Text>
+              <Text style={styles.textnewcar}>Tên xe: </Text>
               <TextInput
                 style={styles.input}
-                placeholder="Hãng xe"
+                placeholder="Tên xe"
                 value={hangxe}
                 onChangeText={setCarBrand}
               />
@@ -644,6 +644,7 @@ const styles = StyleSheet.create({
   },
   groupaddcar: {
     flexDirection: "row",
+    marginVertical: 5,
     alignItems: "center",
   },
   btnaddcar: {
