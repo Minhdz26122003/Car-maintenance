@@ -68,7 +68,7 @@ const PaymentScreen = ({ route, navigation }) => {
       // console.log(response.data);
       if (response.data.success) {
         alert("Thanh toán thành công!");
-        navigation.back();
+        navigation.goBack();
       } else {
         alert("Đã có lỗi khi thanh toán");
       }

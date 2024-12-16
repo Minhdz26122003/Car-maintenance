@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../ipconfig";
@@ -16,11 +17,16 @@ import { Ionicons } from "@expo/vector-icons";
 
 const ManageCarScreen = () => {
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [Car, setCar] = useState([]);
   const [username, setUsername] = useState("");
   const [iduser, setIduser] = useState("");
   const [idxe, setIdxe] = useState("");
-
+  const [editingCar, setEditingCar] = useState(null);
+  const [formData, setFormData] = useState({
+    hangxe: "",
+    namsx: "",
+  });
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await getUserData();
@@ -64,45 +70,34 @@ const ManageCarScreen = () => {
     }
   };
 
-  // const deleteCar = async (idxe, iduser) => {
-  //   Alert.alert(
-  //     "Xác nhận",
-  //     "Bạn có chắc chắn muốn xóa xe này không?",
-  //     [
-  //       {
-  //         text: "Hủy",
-  //         style: "cancel",
-  //       },
-  //       {
-  //         text: "Xóa",
-  //         onPress: async () => {
-  //           try {
-  //             const response = await fetch(`${url}myapi/Xe/xoaxe.php`, {
-  //               method: "DELETE",
-  //               headers: {
-  //                 "Content-Type": "application/json",
-  //               },
-  //               body: JSON.stringify({ idxe, iduser }),
-  //             });
+  const handleUpdateCar = async (idxe) => {
+    try {
+      const response = await fetch(`${url}myapi/Xe/suaxe.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idxe: editingCar.idxe,
+          iduser: editingCar.iduser,
+          hangxe: formData.hangxe,
+          namsx: formData.namsx,
+        }),
+      });
+      const data = await response.json();
 
-  //             const text = await response.text();
-  //             console.log("Phản hồi từ server dạng text:", text);
-  //             const data = JSON.parse(text);
-  //             if (data.success) {
-  //               Alert.alert("Thành công", "Xóa xe thành công!");
-  //               fetchCars();
-  //             } else {
-  //               Alert.alert("Lỗi", `Xóa xe thất bại: ${data.message}`);
-  //             }
-  //           } catch (error) {
-  //             console.error("Lỗi khi xóa xe:", error);
-  //           }
-  //         },
-  //       },
-  //     ],
-  //     { cancelable: true }
-  //   );
-  // };
+      if (data.success) {
+        Alert.alert("Thành công", "Cập nhật thông tin xe thành công!");
+        fetchUserCar(iduser); // Tải lại danh sách xe
+        setIsEditing(false);
+      } else {
+        Alert.alert("Lỗi", "Cập nhật thất bại");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật xe:", error);
+      Alert.alert("Lỗi", "Có lỗi xảy ra khi cập nhật");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,6 +106,37 @@ const ManageCarScreen = () => {
       </View>
       {loading ? (
         <ActivityIndicator size="large" color="#007BFF" />
+      ) : isEditing ? ( // Nếu đang chỉnh sửa, hiển thị form chỉnh sửa
+        <View style={styles.formContainer}>
+          <Text style={styles.formTitle}>Chỉnh sửa thông tin xe</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Hãng xe"
+            value={formData.hangxe}
+            onChangeText={(text) => setFormData({ ...formData, hangxe: text })}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Năm sản xuất"
+            keyboardType="numeric"
+            value={formData.namsx}
+            onChangeText={(text) => setFormData({ ...formData, namsx: text })}
+          />
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleUpdateCar}
+            >
+              <Text style={styles.buttonText}>Lưu</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setIsEditing(false)}
+            >
+              <Text style={styles.buttonText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={Car}
@@ -127,24 +153,16 @@ const ManageCarScreen = () => {
                   <Text>Tên xe: {item.hangxe}</Text>
                   <Text>Năm sản xuất: {item.namsx}</Text>
                 </View>
-
-                {/* <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("EditCarScreen", {
-                      car: {
-                        idxe: item.idxe,
-                        hangxe: item.hangxe,
-                        namsx: item.namsx,
-                      },
-                    })
-                  }
+                <TouchableOpacity
+                  onPress={() => {
+                    setEditingCar(item);
+                    setFormData({ hangxe: item.hangxe, namsx: item.namsx });
+                    setIsEditing(true);
+                  }}
+                  style={styles.editButton}
                 >
-                  <Ionicons name="create-outline" size={24} color="#ff0000" />
-                </TouchableOpacity>*/}
-
-                {/* <TouchableOpacity onPress={() => deleteCar(item.idxe, iduser)}>
-                  <Ionicons name="trash-outline" size={24} color="#ff0000" />
-                </TouchableOpacity> */}
+                  <Ionicons name="create-outline" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             </View>
           )}
@@ -193,14 +211,68 @@ const styles = StyleSheet.create({
   },
 
   editButton: {
-    marginTop: 10,
     backgroundColor: "#007bff",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
+    height: 45,
+    width: 40,
   },
   editButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  formContainer: {
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    elevation: 5, // Đổ bóng nhẹ
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  formTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    fontSize: 16,
+    color: "#333",
+    backgroundColor: "#f9f9f9",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  saveButton: {
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 5,
+  },
+  cancelButton: {
+    backgroundColor: "#ff4d4f",
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
     fontWeight: "bold",
   },
 });

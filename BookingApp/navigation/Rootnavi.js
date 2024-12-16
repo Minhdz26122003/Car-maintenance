@@ -32,11 +32,11 @@ const BottomTabNavigator = ({ route }) => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === "Home") {
+          if (route.name === "Trang chủ") {
             iconName = "home-outline";
-          } else if (route.name === "Booking") {
+          } else if (route.name === "Đặt lịch") {
             iconName = "calendar-outline";
-          } else if (route.name === "Profile") {
+          } else if (route.name === "Cá nhân") {
             iconName = "person-outline";
           }
 
@@ -45,18 +45,18 @@ const BottomTabNavigator = ({ route }) => {
       })}
     >
       <Tab.Screen
-        name="Home"
+        name="Trang chủ"
         component={HomeScreen}
         initialParams={{ username }}
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Booking"
+        name="Đặt lịch"
         component={BookingScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Profile"
+        name="Cá nhân"
         component={ProfileScreen}
         options={{ headerShown: false }}
       />

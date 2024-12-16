@@ -146,6 +146,18 @@ const ManageReviewScreen = ({ navigation }) => {
               </View>
             </View>
           )}
+          ListEmptyComponent={() => (
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 20,
+                fontSize: 16,
+                color: "#555",
+              }}
+            >
+              Không có dữ liệu
+            </Text>
+          )}
         />
       )}
     </SafeAreaView>

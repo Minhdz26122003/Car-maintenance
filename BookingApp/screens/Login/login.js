@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   icon_pass: {
     position: "absolute",
     right: 10,
-    top: 15,
+    top: 10,
   },
   input: {
     flex: 1,

@@ -66,7 +66,6 @@ const Centers = () => {
     }
   };
 
-  // Gọi API để lấy tất cả khi component được load lần đầu
   useEffect(() => {
     const { tentrungtam, diachi } = searchTerm;
     if (tentrungtam || diachi) {
@@ -146,22 +145,18 @@ const Centers = () => {
 
   // XÓA TRUNG TÂM
   const handleDelete = async (id) => {
-    // Hiển thị hộp thoại xác nhận
     const confirmDelete = window.confirm(
       "Bạn có chắc chắn muốn xóa trung tâm này không?"
     );
 
     if (!confirmDelete) {
-      // Nếu người dùng chọn "Cancel", không làm gì cả
       return;
     }
 
     try {
       await axios.delete(`${url}/myapi/Trungtam/xoatrungtam.php`, {
-        data: { idtrungtam: id }, // Gửi ID trong body của yêu cầu DELETE
+        data: { idtrungtam: id },
       });
-
-      // Cập nhật danh sách sau khi xóa
       setCenters(centers.filter((center) => center.idtrungtam !== id));
     } catch (error) {
       console.error("Error deleting center:", error);

@@ -146,7 +146,7 @@ const HomeScreen = ({ navigation }) => {
                   />
                 </View>
                 <View>
-                  <Text style={styles.helloText}>Hello, 👋</Text>
+                  <Text style={styles.helloText}>Xin chào, 👋</Text>
                   <Text style={styles.userName}> {username}</Text>
                 </View>
               </View>
